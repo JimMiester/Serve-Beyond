@@ -26,37 +26,6 @@ export const locations = [
   { value: "bgc", label: "BGC Club" },
 ];
 
-export const programs = [
-  {
-    slug: "private",
-    title: "Private Coaching",
-    blurb: "One-to-one with a certified coach. Video review every third session.",
-    meta: "From ₱1,500 / hour",
-    image: "", // 4:3
-  },
-  {
-    slug: "group",
-    title: "Group Clinics",
-    blurb: "Four players, one coach, ninety minutes of drills and live ball.",
-    meta: "From ₱550 / person",
-    image: "", // 4:3
-  },
-  {
-    slug: "junior",
-    title: "Junior Academy",
-    blurb: "Ages 6–16, streamed by level across red, orange and green pathways.",
-    meta: "From ₱400 / session",
-    image: "", // 4:3
-  },
-  {
-    slug: "match",
-    title: "Match Play",
-    blurb: "Supervised competitive sets with a coach courtside calling patterns.",
-    meta: "From ₱700 / person",
-    image: "", // 4:3
-  },
-];
-
 export const steps = [
   {
     n: "01",
@@ -72,33 +41,6 @@ export const steps = [
     n: "03",
     title: "Track the gains",
     body: "Session notes, video clips and progress markers land in your player log before you reach the car park.",
-  },
-];
-
-export const coaches = [
-  {
-    name: "Marcus Vaughn",
-    role: "Head Coach",
-    cert: "PTR Professional",
-    years: 12,
-    focus: "Serve mechanics · Singles strategy",
-    image: "", // 4:5 portrait
-  },
-  {
-    name: "Priya Raman",
-    role: "Performance Coach",
-    cert: "LTA Level 4",
-    years: 9,
-    focus: "Junior pathway · Footwork",
-    image: "", // 4:5 portrait
-  },
-  {
-    name: "Danny Oyelaran",
-    role: "Club Coach",
-    cert: "LTA Level 3",
-    years: 6,
-    focus: "Doubles · Adult beginners",
-    image: "", // 4:5 portrait
   },
 ];
 
