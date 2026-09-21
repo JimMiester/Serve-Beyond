@@ -55,7 +55,7 @@ export default function Nav() {
 
         <div className="flex items-center gap-2">
           <Button href="/book" variant="white" size="sm">
-            Book a Court
+            Get Started
           </Button>
 
           {/* Native disclosure — no client bundle for a five-link menu. */}

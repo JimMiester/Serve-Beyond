@@ -7,11 +7,13 @@ export default function Pricing() {
   return (
     <section id="pricing" className="bg-white py-20 sm:py-28">
       <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
-        <SectionHead
-          eyebrow="Pricing"
-          title="Pay per hour, or settle in."
-          lede="No joining fee and no contract. Membership only pays for itself if you are here most weeks, and we will tell you if it does not."
-        />
+        <Reveal>
+          <SectionHead
+            eyebrow="Pricing"
+            title="Pay per hour, or settle in."
+            lede="No joining fee and no contract. Membership only pays for itself if you are here most weeks, and we will tell you if it does not."
+          />
+        </Reveal>
 
         <Reveal as="ul" stagger className="mt-14 grid items-start gap-6 lg:grid-cols-3">
           {pricing.map((p) => (

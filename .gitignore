@@ -42,3 +42,6 @@ next-env.d.ts
 
 # persistent dev server (see scripts/dev-service.ps1)
 .dev-server.log
+
+# tool-managed skill/plugin cache, not project content
+.claude/

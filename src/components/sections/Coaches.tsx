@@ -9,7 +9,7 @@ export default function Coaches() {
   return (
     <section id="coaches" className="bg-cream py-20 sm:py-28">
       <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
-        <div className="flex flex-wrap items-end justify-between gap-8">
+        <Reveal className="flex flex-wrap items-end justify-between gap-8">
           <SectionHead
             eyebrow="The coaches"
             title="Certified, and still competing."
@@ -18,7 +18,7 @@ export default function Coaches() {
           <Button href="/coaching" variant="outline" className="shrink-0">
             All coaches
           </Button>
-        </div>
+        </Reveal>
 
         <Reveal as="ul" stagger className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {coaches.map((c) => (

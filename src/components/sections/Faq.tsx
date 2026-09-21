@@ -1,3 +1,4 @@
+import Reveal from "@/components/ui/Reveal";
 import SectionHead from "@/components/ui/SectionHead";
 import Button from "@/components/ui/Button";
 import { faqs, site } from "@/content/site";
@@ -5,10 +6,7 @@ import { faqs, site } from "@/content/site";
 export default function Faq() {
   return (
     <section id="faqs" className="bg-cream py-20 sm:py-28">
-      {/* Plain, not scroll-revealed: this is read content, not a spectacle
-          list — the accordion's own open/close motion is where this section's
-          animation budget goes. */}
-      <div className="mx-auto grid max-w-[1400px] gap-12 px-5 sm:px-8 lg:grid-cols-12 lg:gap-16">
+      <Reveal className="mx-auto grid max-w-[1400px] gap-12 px-5 sm:px-8 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-4">
           <SectionHead eyebrow="FAQs" title="Before you book." />
           <p className="mt-5 text-[17px] leading-[1.65] text-navy/70">
@@ -37,7 +35,7 @@ export default function Faq() {
             </details>
           ))}
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }

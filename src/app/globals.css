@@ -114,28 +114,36 @@ details[open] > .menu-panel {
   .skeleton::after { animation: none; }
 }
 
-/* Scroll reveal. The hidden state lives here, not in React state, so there is
-   no hydration flash — Reveal.tsx only flips data-reveal to "shown".
-   Plain [data-reveal] is a single-element fade, reserved for a genuine
-   one-off; every list on this page (card grids, steps, stats, quotes) uses
-   the stagger variant below instead, because a list arriving as a list is
-   the one case craft-floor's motion rule exempts from "identical entrance on
-   every section". */
+/* Scroll reveal. Fades both ways — in when a section enters the viewport,
+   out when it leaves, in either scroll direction — not a one-shot entrance.
+   The hidden state lives here, not in React state, so toggling it on every
+   scroll pass costs a DOM-attribute write, not a re-render.
+
+   Asymmetric timing: the EXIT transition is declared on the base [data-reveal]
+   rule and the ENTER transition on [data-reveal="shown"]. CSS resolves a
+   transition's duration from the style being transitioned TO, so leaving
+   these on opposite rules makes leaving the viewport quick and unobtrusive
+   while arriving stays the slower, authored motion — exit faster than
+   entrance, so scrolling past something never feels like it's fighting you. */
 [data-reveal] {
   opacity: 0;
   transform: translateY(14px);
   transition:
-    opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
-    transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+    opacity 0.35s cubic-bezier(0.4, 0, 1, 1),
+    transform 0.35s cubic-bezier(0.4, 0, 1, 1);
 }
 [data-reveal="shown"] {
   opacity: 1;
   transform: none;
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 /* Stagger variant: the container itself never fades — only its direct
-   children do, offset in sequence, capped at 5 items so a 12-item grid does
-   not queue a visible half-second wave. */
+   children do, offset in sequence on the way in (capped at 5 items so a
+   12-item grid doesn't queue a visible half-second wave); the way out has no
+   stagger, so a quick scroll doesn't leave trailing items mid-fade. */
 [data-reveal].stagger-children {
   opacity: 1;
   transform: none;
@@ -145,17 +153,20 @@ details[open] > .menu-panel {
   opacity: 0;
   transform: translateY(14px);
   transition:
-    opacity 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
-    transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+    opacity 0.35s cubic-bezier(0.4, 0, 1, 1),
+    transform 0.35s cubic-bezier(0.4, 0, 1, 1);
 }
 [data-reveal="shown"].stagger-children > * {
   opacity: 1;
   transform: none;
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
-.stagger-children > *:nth-child(2) { transition-delay: 70ms; }
-.stagger-children > *:nth-child(3) { transition-delay: 140ms; }
-.stagger-children > *:nth-child(4) { transition-delay: 210ms; }
-.stagger-children > *:nth-child(n + 5) { transition-delay: 280ms; }
+[data-reveal="shown"].stagger-children > *:nth-child(2) { transition-delay: 70ms; }
+[data-reveal="shown"].stagger-children > *:nth-child(3) { transition-delay: 140ms; }
+[data-reveal="shown"].stagger-children > *:nth-child(4) { transition-delay: 210ms; }
+[data-reveal="shown"].stagger-children > *:nth-child(n + 5) { transition-delay: 280ms; }
 
 /* The focal moment: a serve. The CTA's arrow badge winds up and releases,
    landing just after the button text fades in — the follow-through of the

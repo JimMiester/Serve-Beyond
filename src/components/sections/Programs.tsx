@@ -9,11 +9,13 @@ export default function Programs() {
   return (
     <section id="programs" className="bg-cream py-20 sm:py-28">
       <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
-        <SectionHead
-          eyebrow="Programmes"
-          title="Four ways onto a court."
-          lede="Whether you are chasing a county ranking or just want a rally that lasts more than four shots, one of these fits."
-        />
+        <Reveal>
+          <SectionHead
+            eyebrow="Programmes"
+            title="Four ways onto a court."
+            lede="Whether you are chasing a county ranking or just want a rally that lasts more than four shots, one of these fits."
+          />
+        </Reveal>
 
         <Reveal as="ul" stagger className="mt-14 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
           {programs.map((p) => (

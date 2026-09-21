@@ -6,12 +6,14 @@ export default function HowItWorks() {
   return (
     <section className="bg-navy py-20 sm:py-28">
       <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
-        <SectionHead
-          eyebrow="How it works"
-          title="Booked in under a minute."
-          lede="No membership gate, no phone calls, no waiting to hear back from the desk."
-          tone="dark"
-        />
+        <Reveal>
+          <SectionHead
+            eyebrow="How it works"
+            title="Booked in under a minute."
+            lede="No membership gate, no phone calls, no waiting to hear back from the desk."
+            tone="dark"
+          />
+        </Reveal>
 
         <Reveal as="ol" stagger className="mt-14 grid gap-px overflow-hidden rounded-2xl bg-white/10 sm:grid-cols-3">
           {steps.map((s) => (
