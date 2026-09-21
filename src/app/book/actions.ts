@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { computeAvailableSlots } from "./availability";
 
 export async function createBooking(formData: FormData) {
   const courtId = String(formData.get("court_id") ?? "");
@@ -19,6 +20,23 @@ export async function createBooking(formData: FormData) {
 
   if (!user) {
     redirect(`/sign-in?next=${encodeURIComponent(`/book?${params.toString()}`)}`);
+  }
+
+  const dayStart = `${date}T00:00:00+08:00`;
+  const dayEnd = `${date}T23:59:59+08:00`;
+  const { data: existing } = await supabase
+    .from("bookings")
+    .select("starts_at, ends_at")
+    .eq("court_id", courtId)
+    .eq("status", "confirmed")
+    .gte("starts_at", dayStart)
+    .lte("starts_at", dayEnd);
+
+  const validSlots = computeAvailableSlots(date, existing ?? []);
+  const isValidSlot = validSlots.some((s) => s.startsAt === startsAt && s.endsAt === endsAt);
+
+  if (!isValidSlot) {
+    redirect(`/book?${params.toString()}&error=${encodeURIComponent("That slot is no longer valid — pick another.")}`);
   }
 
   const { error } = await supabase.from("bookings").insert({

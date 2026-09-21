@@ -9,7 +9,8 @@ import type { Program } from "@/lib/supabase/types";
 
 export default async function Programs() {
   const supabase = await createClient();
-  const { data } = await supabase.from("programs").select("*").order("price_from", { ascending: true });
+  const { data, error } = await supabase.from("programs").select("*").order("price_from", { ascending: true });
+  if (error) throw error;
   const programs = (data ?? []) as Program[];
 
   return (

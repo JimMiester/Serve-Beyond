@@ -6,7 +6,7 @@ import { createServerClient } from "@supabase/ssr";
  * Server Components can read a stale or expired token — middleware is the
  * only place that runs early enough to refresh it before a page renders.
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(

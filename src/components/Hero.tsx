@@ -91,10 +91,15 @@ const LABEL = "block text-[11px] font-semibold uppercase tracking-[0.14em] text-
 /** Sits below the hero on the cream band — deliberately clear of the edge. */
 export async function BookingBar() {
   const supabase = await createClient();
-  const [{ data: courtsData }, { data: programsData }] = await Promise.all([
+  const [
+    { data: courtsData, error: courtsError },
+    { data: programsData, error: programsError },
+  ] = await Promise.all([
     supabase.from("courts").select("*").eq("active", true).order("name"),
     supabase.from("programs").select("*").order("price_from"),
   ]);
+  if (courtsError) throw courtsError;
+  if (programsError) throw programsError;
   const courts = (courtsData ?? []) as Court[];
   const programs = (programsData ?? []) as Program[];
 

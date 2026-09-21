@@ -5,7 +5,13 @@ import { createClient } from "@/lib/supabase/server";
 import { cancelBooking } from "./actions";
 import type { Booking, Court, Program, Membership } from "@/lib/supabase/types";
 
-export default async function AccountPage() {
+export default async function AccountPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error: errorMessage } = await searchParams;
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -15,12 +21,21 @@ export default async function AccountPage() {
     redirect("/sign-in?next=/account");
   }
 
-  const [{ data: bookingsData }, { data: courtsData }, { data: programsData }, { data: membershipData }] = await Promise.all([
+  const [
+    { data: bookingsData, error: bookingsError },
+    { data: courtsData, error: courtsError },
+    { data: programsData, error: programsError },
+    { data: membershipData, error: membershipError },
+  ] = await Promise.all([
     supabase.from("bookings").select("*").eq("status", "confirmed").order("starts_at"),
     supabase.from("courts").select("*"),
     supabase.from("programs").select("*"),
-    supabase.from("memberships").select("*").maybeSingle(),
+    supabase.from("memberships").select("*").eq("player_id", user.id).maybeSingle(),
   ]);
+  if (bookingsError) throw bookingsError;
+  if (courtsError) throw courtsError;
+  if (programsError) throw programsError;
+  if (membershipError) throw membershipError;
 
   const bookings = (bookingsData ?? []) as Booking[];
   const courts = (courtsData ?? []) as Court[];
@@ -36,6 +51,10 @@ export default async function AccountPage() {
       <main id="main" className="mx-auto max-w-[800px] px-5 pb-20 pt-[110px] sm:px-8">
         <h1 className="font-display text-[clamp(2rem,4vw,2.75rem)] text-navy">Your account</h1>
         <p className="mt-2 text-[15px] text-navy/65">{user.email}</p>
+
+        {errorMessage && (
+          <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-[15px] text-red-700">{errorMessage}</p>
+        )}
 
         <section className="mt-10">
           <h2 className="text-[15px] font-semibold uppercase tracking-[0.1em] text-navy/60">Membership</h2>

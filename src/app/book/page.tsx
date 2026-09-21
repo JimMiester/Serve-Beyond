@@ -18,28 +18,35 @@ export default async function BookPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ data: courtsData }, { data: programsData }] = await Promise.all([
+  const [
+    { data: courtsData, error: courtsError },
+    { data: programsData, error: programsError },
+  ] = await Promise.all([
     supabase.from("courts").select("*").eq("active", true).order("name"),
     supabase.from("programs").select("*").order("price_from"),
   ]);
+  if (courtsError) throw courtsError;
+  if (programsError) throw programsError;
   const courts = (courtsData ?? []) as Court[];
   const programs = (programsData ?? []) as Program[];
 
   const selectedCourt = court ?? courts[0]?.id ?? "";
-  const selectedDate = date ?? new Date().toISOString().slice(0, 10);
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Manila" });
+  const selectedDate = /^\d{4}-\d{2}-\d{2}$/.test(date ?? "") ? date! : today;
   const selectedProgram = program ?? programs[0]?.id ?? "";
 
   let slots: ReturnType<typeof computeAvailableSlots> = [];
   if (selectedCourt) {
     const dayStart = `${selectedDate}T00:00:00+08:00`;
     const dayEnd = `${selectedDate}T23:59:59+08:00`;
-    const { data: existing } = await supabase
+    const { data: existing, error: existingError } = await supabase
       .from("bookings")
       .select("starts_at, ends_at")
       .eq("court_id", selectedCourt)
       .eq("status", "confirmed")
       .gte("starts_at", dayStart)
       .lte("starts_at", dayEnd);
+    if (existingError) throw existingError;
 
     slots = computeAvailableSlots(selectedDate, (existing ?? []) as Pick<Booking, "starts_at" | "ends_at">[]);
   }

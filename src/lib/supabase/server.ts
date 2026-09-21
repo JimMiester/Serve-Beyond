@@ -22,7 +22,7 @@ export async function createClient() {
           } catch {
             // Called from a Server Component render, which can't set
             // cookies (there's no response to attach them to yet).
-            // middleware.ts refreshes the session on every request instead,
+            // proxy.ts refreshes the session on every request instead,
             // so a session write failing here is safe to ignore.
           }
         },

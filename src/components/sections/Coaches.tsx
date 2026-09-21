@@ -9,7 +9,8 @@ import type { Coach } from "@/lib/supabase/types";
 
 export default async function Coaches() {
   const supabase = await createClient();
-  const { data } = await supabase.from("coaches").select("*").eq("active", true).order("years", { ascending: false });
+  const { data, error } = await supabase.from("coaches").select("*").eq("active", true).order("years", { ascending: false });
+  if (error) throw error;
   const coaches = (data ?? []) as Coach[];
 
   return (
