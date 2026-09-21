@@ -45,3 +45,4 @@ next-env.d.ts
 
 # tool-managed skill/plugin cache, not project content
 .claude/
+supabase/.temp/
