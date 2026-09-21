@@ -17,7 +17,24 @@
 
   --color-navy: #0f2430;
   --color-cream: #f7f5f1;
+
+  /* Every card on the site uses this radius by convention (rounded-2xl).
+     Named here so a new page copies one documented value instead of
+     re-typing the Tailwind class from memory. */
+  --radius-card: 1rem;
 }
+
+/* Type scale in use across the site — copy one of these, don't invent a
+   new size. (Tailwind arbitrary values, e.g. text-[15px], not a Tailwind
+   scale step — this project's sizes were tuned individually, not off the
+   default scale.)
+     Eyebrow / label:    11px, 12px, 13px  (uppercase, tracked wide)
+     Body:               14px, 15px, 16px
+     Lede / intro:       17px
+     Card heading:       22px, 23px
+     Section heading:    clamp(2rem, 4.4vw, 3rem)   — SectionHead's h2
+     Page heading:       clamp(2rem, 4vw, 2.75rem)  — /book, /account today
+     Hero display:       clamp(2.75rem, 7.2vw, 4rem) */
 
 :root {
   --background: var(--color-cream);
