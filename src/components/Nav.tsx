@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Logo from "./Logo";
 import Button from "@/components/ui/Button";
+import { signOut } from "@/lib/supabase/auth-actions";
 
 const LINKS = [
   { label: "Courts", href: "/courts" },
@@ -13,7 +14,7 @@ const LINKS = [
   { label: "FAQs", href: "/faqs" },
 ];
 
-export default function Nav() {
+export default function Nav({ session }: { session: { email: string } | null }) {
   // Over the hero the bar can stay barely-there glass; past it the bar sits on
   // cream, where white links on a 25% scrim were unreadable. A passive scroll
   // listener reading scrollY is cheaper here than an observer + sentinel.
@@ -51,6 +52,14 @@ export default function Nav() {
               </Link>
             </li>
           ))}
+          <li>
+            <Link
+              href={session ? "/account" : "/sign-in"}
+              className="text-[15px] font-light text-white/85 transition-colors hover:text-sky focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky"
+            >
+              {session ? "Account" : "Sign In"}
+            </Link>
+          </li>
         </ul>
 
         <div className="flex items-center gap-2">
@@ -77,6 +86,27 @@ export default function Nav() {
                   </Link>
                 </li>
               ))}
+              <li>
+                {session ? (
+                  <>
+                    <Link href="/account" className="block rounded-xl px-4 py-3 text-[15px] text-white/85 hover:bg-white/10">
+                      Account
+                    </Link>
+                    <form action={signOut}>
+                      <button
+                        type="submit"
+                        className="block w-full rounded-xl px-4 py-3 text-left text-[15px] text-white/85 hover:bg-white/10"
+                      >
+                        Sign out
+                      </button>
+                    </form>
+                  </>
+                ) : (
+                  <Link href="/sign-in" className="block rounded-xl px-4 py-3 text-[15px] text-white/85 hover:bg-white/10">
+                    Sign In
+                  </Link>
+                )}
+              </li>
             </ul>
           </details>
         </div>

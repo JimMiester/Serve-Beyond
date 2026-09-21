@@ -7,11 +7,17 @@ import Pricing from "@/components/sections/Pricing";
 import Proof from "@/components/sections/Proof";
 import Faq from "@/components/sections/Faq";
 import Footer from "@/components/sections/Footer";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <>
-      <Nav />
+      <Nav session={user ? { email: user.email ?? "" } : null} />
       <main id="main">
         <Hero />
         <BookingBar />
