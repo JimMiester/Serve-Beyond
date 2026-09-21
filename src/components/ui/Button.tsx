@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import type { ReactNode } from "react";
 
 // active:scale matters more than hover here — most bookings happen on a phone,

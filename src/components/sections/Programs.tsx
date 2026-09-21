@@ -1,7 +1,7 @@
 import Skeleton from "@/components/ui/Skeleton";
 import Reveal from "@/components/ui/Reveal";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import SectionHead from "@/components/ui/SectionHead";
 import { createClient } from "@/lib/supabase/server";
 import { getPublicImageUrl } from "@/lib/supabase/storage";

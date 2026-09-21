@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import Logo from "./Logo";
 import Button from "@/components/ui/Button";
 import { signOut } from "@/lib/supabase/auth-actions";
@@ -29,6 +29,7 @@ export default function Nav({ session }: { session: { email: string } | null }) 
 
   return (
     <header
+      data-site-nav
       className={`fixed inset-x-0 top-0 z-50 border-b backdrop-blur-xl transition-[height,background-color,border-color] duration-300 ${
         scrolled ? "h-[60px] border-white/10 bg-navy/95" : "h-[72px] border-white/10 bg-navy/25"
       }`}

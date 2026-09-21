@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Court, Program } from "@/lib/supabase/types";
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 
 export default function Hero() {
   return (

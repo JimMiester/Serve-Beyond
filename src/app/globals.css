@@ -213,4 +213,64 @@ details[open] > .menu-panel {
   .enter-up,
   .cta-badge,
   details[open] > .menu-panel { animation: none !important; }
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+  }
 }
+
+/* Page transitions, driven by next-view-transitions (see ViewTransitions
+   in the root layout) wrapping the native browser View Transition API.
+   No JS animation library — this is the entire animation. */
+::view-transition-old(root) {
+  animation:
+    150ms ease-in both page-fade-out,
+    220ms ease-in-out both page-slide-out;
+}
+::view-transition-new(root) {
+  animation:
+    220ms ease-in-out 60ms both page-fade-in,
+    260ms ease-in-out both page-slide-in;
+}
+
+@keyframes page-fade-out {
+  to { opacity: 0; }
+}
+@keyframes page-fade-in {
+  from { opacity: 0; }
+}
+@keyframes page-slide-out {
+  to { transform: translateY(-10px); }
+}
+@keyframes page-slide-in {
+  from { transform: translateY(10px); }
+}
+
+/* The browser's View Transition API snapshots the WHOLE viewport by
+   default — including Nav, which never actually unmounts (it lives in
+   (site)/layout.tsx, shared across every route below it). Without this,
+   Nav would still visibly flash because the snapshot doesn't know about
+   React's tree, only what's on screen. Naming it and killing its own
+   transition keeps it visually still while page content moves under it. */
+nav[data-site-nav] {
+  view-transition-name: site-nav;
+}
+::view-transition-group(site-nav) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-nav) {
+  display: none;
+}
+::view-transition-new(site-nav) {
+  animation: none;
+}
+
+/* The transition overlay captures pointer events by default; without this,
+   a click during the ~260ms transition is silently lost. */
+::view-transition {
+  pointer-events: none;
+}
+

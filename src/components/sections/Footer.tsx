@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import Logo from "@/components/Logo";
 import Button from "@/components/ui/Button";
 import { site } from "@/content/site";
