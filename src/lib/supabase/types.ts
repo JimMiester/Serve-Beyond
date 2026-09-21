@@ -41,6 +41,8 @@ export type Program = {
 export type Profile = {
   id: string;
   role: "player" | "admin";
+  intended_role: "player" | "coach" | null;
+  coach_approved: boolean;
   full_name: string | null;
   phone: string | null;
   created_at: string;
