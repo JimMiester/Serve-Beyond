@@ -1,0 +1,188 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-playfair);
+
+  /* Sampled straight out of public/logo.png — these are the mark's own values. */
+  --color-emerald: #00a878;
+  --color-sky: #5bc0eb;
+  --color-gold: #ffcc00;
+  --color-ink: #3a3d40;
+
+  /* Emerald at full chroma is only 3.05:1 against white, so text-bearing fills
+     step down to -600 (4.9:1). Keep --color-emerald for accents and tints. */
+  --color-emerald-600: #008159;
+  --color-emerald-700: #006b4a;
+
+  --color-navy: #0f2430;
+  --color-cream: #f7f5f1;
+}
+
+:root {
+  --background: var(--color-cream);
+  --foreground: var(--color-navy);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Film grain. One tiled turbulence tile, kept under 8% so it reads as stock, not noise. */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+:root {
+  /* Lets block-size animate to and from `auto` — required for the accordion. */
+  interpolate-size: allow-keywords;
+}
+
+/* Entrance. `both` fill holds the from-state through the delay; omitting `to`
+   means it resolves to the element's natural style, so if animations are off
+   entirely the element simply renders normally instead of staying invisible. */
+@keyframes enter-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+.enter-up {
+  animation: enter-up 0.85s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+/* Disclosure open/close. ::details-content is the only way to do this without
+   JS; browsers that lack it just snap, exactly as they do today. */
+.disclosure::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition:
+    block-size 0.34s cubic-bezier(0.22, 0.61, 0.36, 1),
+    content-visibility 0.34s;
+  transition-behavior: allow-discrete;
+}
+.disclosure[open]::details-content {
+  block-size: auto;
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+}
+.menu-panel {
+  transform-origin: top right;
+}
+details[open] > .menu-panel {
+  animation: menu-in 0.18s ease-out both;
+}
+
+/* Skeleton placeholders. Compositor-only sweep (transform, not background-position)
+   so it stays cheap on mid-range Android. */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: rgba(15, 36, 48, 0.06);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  animation: skeleton-sweep 1.8s ease-in-out infinite;
+}
+.skeleton-dark {
+  background: rgba(255, 255, 255, 0.07);
+}
+.skeleton-dark::after {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.13), transparent);
+}
+@keyframes skeleton-sweep {
+  to { transform: translateX(100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after { animation: none; }
+}
+
+/* Scroll reveal. The hidden state lives here, not in React state, so there is
+   no hydration flash — Reveal.tsx only flips data-reveal to "shown".
+   Plain [data-reveal] is a single-element fade, reserved for a genuine
+   one-off; every list on this page (card grids, steps, stats, quotes) uses
+   the stagger variant below instead, because a list arriving as a list is
+   the one case craft-floor's motion rule exempts from "identical entrance on
+   every section". */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+[data-reveal="shown"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Stagger variant: the container itself never fades — only its direct
+   children do, offset in sequence, capped at 5 items so a 12-item grid does
+   not queue a visible half-second wave. */
+[data-reveal].stagger-children {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+.stagger-children > * {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+[data-reveal="shown"].stagger-children > * {
+  opacity: 1;
+  transform: none;
+}
+.stagger-children > *:nth-child(2) { transition-delay: 70ms; }
+.stagger-children > *:nth-child(3) { transition-delay: 140ms; }
+.stagger-children > *:nth-child(4) { transition-delay: 210ms; }
+.stagger-children > *:nth-child(n + 5) { transition-delay: 280ms; }
+
+/* The focal moment: a serve. The CTA's arrow badge winds up and releases,
+   landing just after the button text fades in — the follow-through of the
+   swing the headline's "Raises" already promised. One authored gesture,
+   used once, tied to a site named Serve & Beyond. Confident ease-out-expo,
+   not a spring — a struck ball decelerates, it doesn't bounce back. */
+@keyframes serve-release {
+  from {
+    opacity: 0;
+    transform: rotate(-28deg) scale(0.8);
+  }
+}
+.cta-badge {
+  animation: serve-release 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+  /* Never leave content stranded invisible when motion is off. */
+  [data-reveal],
+  .stagger-children > * { opacity: 1; transform: none; }
+  .enter-up,
+  .cta-badge,
+  details[open] > .menu-panel { animation: none !important; }
+}
