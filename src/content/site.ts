@@ -66,20 +66,6 @@ export const pricing = [
     cta: "Book a lesson",
     featured: true,
   },
-  {
-    tier: "Membership",
-    price: "₱3,500",
-    unit: "per month",
-    note: "For players who are here every week.",
-    features: [
-      "Eight court hours a month",
-      "15% off every lesson",
-      "30-day priority booking window",
-      "Two guest passes a month",
-    ],
-    cta: "Become a member",
-    featured: false,
-  },
 ];
 
 export const stats = [

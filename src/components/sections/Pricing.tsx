@@ -11,8 +11,8 @@ export default function Pricing() {
         <Reveal>
           <SectionHead
             eyebrow="Pricing"
-            title="Pay per hour, or settle in."
-            lede="No joining fee and no contract. Membership only pays for itself if you are here most weeks, and we will tell you if it does not."
+            title="Pay per hour."
+            lede="No joining fee, no contract, no minimum. Book a court or a lesson whenever you want one."
           />
         </Reveal>
 

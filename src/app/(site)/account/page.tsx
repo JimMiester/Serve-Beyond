@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { cancelBooking } from "./actions";
 import PageTransition from "@/components/ui/PageTransition";
-import type { Booking, Court, Program, Membership } from "@/lib/supabase/types";
+import type { Booking, Court, Program } from "@/lib/supabase/types";
 
 export default async function AccountPage({
   searchParams,
@@ -24,22 +24,18 @@ export default async function AccountPage({
     { data: bookingsData, error: bookingsError },
     { data: courtsData, error: courtsError },
     { data: programsData, error: programsError },
-    { data: membershipData, error: membershipError },
   ] = await Promise.all([
     supabase.from("bookings").select("*").eq("status", "confirmed").order("starts_at"),
     supabase.from("courts").select("*"),
     supabase.from("programs").select("*"),
-    supabase.from("memberships").select("*").eq("player_id", user.id).maybeSingle(),
   ]);
   if (bookingsError) throw bookingsError;
   if (courtsError) throw courtsError;
   if (programsError) throw programsError;
-  if (membershipError) throw membershipError;
 
   const bookings = (bookingsData ?? []) as Booking[];
   const courts = (courtsData ?? []) as Court[];
   const programs = (programsData ?? []) as Program[];
-  const membership = membershipData as Membership | null;
 
   const courtName = (id: string) => courts.find((c) => c.id === id)?.name ?? "Court";
   const programTitle = (id: string) => programs.find((p) => p.id === id)?.title ?? "Session";
@@ -53,17 +49,6 @@ export default async function AccountPage({
         {errorMessage && (
           <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-[15px] text-red-700">{errorMessage}</p>
         )}
-
-        <section className="mt-10">
-          <h2 className="text-[15px] font-semibold uppercase tracking-[0.1em] text-navy/60">Membership</h2>
-          {membership ? (
-            <p className="mt-3 text-[15px] text-navy/80">
-              {membership.status} · {membership.hours_remaining} hours remaining
-            </p>
-          ) : (
-            <p className="mt-3 text-[15px] text-navy/60">No active membership.</p>
-          )}
-        </section>
 
         <section className="mt-10">
           <h2 className="text-[15px] font-semibold uppercase tracking-[0.1em] text-navy/60">Upcoming bookings</h2>

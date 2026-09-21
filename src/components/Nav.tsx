@@ -9,7 +9,6 @@ import { signOut } from "@/lib/supabase/auth-actions";
 const LINKS = [
   { label: "Courts", href: "/courts" },
   { label: "Coaching", href: "/coaching" },
-  { label: "Membership", href: "/membership" },
   { label: "Results", href: "/results" },
   { label: "FAQs", href: "/faqs" },
 ];
