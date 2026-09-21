@@ -19,13 +19,6 @@ export const site = {
   ],
 };
 
-/** Booking-bar venues. Phase 2 replaces this with a Supabase query. */
-export const locations = [
-  { value: "ortigas", label: "Ortigas Indoor" },
-  { value: "alabang", label: "Alabang Courts" },
-  { value: "bgc", label: "BGC Club" },
-];
-
 export const steps = [
   {
     n: "01",

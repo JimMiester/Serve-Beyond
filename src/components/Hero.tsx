@@ -1,4 +1,5 @@
-import { locations } from "@/content/site";
+import { createClient } from "@/lib/supabase/server";
+import type { Court, Program } from "@/lib/supabase/types";
 import Link from "next/link";
 
 export default function Hero() {
@@ -88,7 +89,15 @@ const FIELD =
 const LABEL = "block text-[11px] font-semibold uppercase tracking-[0.14em] text-navy/45";
 
 /** Sits below the hero on the cream band — deliberately clear of the edge. */
-export function BookingBar() {
+export async function BookingBar() {
+  const supabase = await createClient();
+  const [{ data: courtsData }, { data: programsData }] = await Promise.all([
+    supabase.from("courts").select("*").eq("active", true).order("name"),
+    supabase.from("programs").select("*").order("price_from"),
+  ]);
+  const courts = (courtsData ?? []) as Court[];
+  const programs = (programsData ?? []) as Program[];
+
   return (
     <div
       className="enter-up relative z-20 mx-auto mt-8 w-full max-w-[1400px] px-5 sm:mt-10 sm:px-8"
@@ -100,13 +109,16 @@ export function BookingBar() {
         action="/book"
         className="rounded-2xl border border-navy/10 bg-white shadow-[0_18px_44px_-24px_rgba(11,27,43,0.30)]"
       >
-        <div className="grid grid-cols-1 divide-y divide-navy/10 sm:grid-cols-2 lg:grid-cols-[repeat(4,1fr)_auto] lg:divide-x lg:divide-y-0">
+        {/* Three fields, not four: exact time-slot picking depends on real
+            availability, which can't live in a plain <select> — that choice
+            happens on /book itself. This bar's job is just to route there. */}
+        <div className="grid grid-cols-1 divide-y divide-navy/10 sm:grid-cols-3 lg:grid-cols-[repeat(3,1fr)_auto] lg:divide-x lg:divide-y-0">
           <label className="block px-6 py-4">
-            <span className={LABEL}>Location</span>
-            <select name="location" className={`${FIELD} mt-1.5`} defaultValue={locations[0].value}>
-              {locations.map((l) => (
-                <option key={l.value} value={l.value}>
-                  {l.label}
+            <span className={LABEL}>Court</span>
+            <select name="court" className={`${FIELD} mt-1.5`} defaultValue={courts[0]?.id ?? ""}>
+              {courts.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
                 </option>
               ))}
             </select>
@@ -118,20 +130,13 @@ export function BookingBar() {
           </label>
 
           <label className="block px-6 py-4">
-            <span className={LABEL}>Time Slot</span>
-            <select name="slot" className={`${FIELD} mt-1.5`} defaultValue="evening">
-              <option value="morning">Morning · 6–11am</option>
-              <option value="midday">Midday · 11am–3pm</option>
-              <option value="evening">Evening · 3–9pm</option>
-            </select>
-          </label>
-
-          <label className="block px-6 py-4">
             <span className={LABEL}>Session Type</span>
-            <select name="type" className={`${FIELD} mt-1.5`} defaultValue="private">
-              <option value="court">Court hire</option>
-              <option value="private">Private lesson</option>
-              <option value="group">Group clinic</option>
+            <select name="program" className={`${FIELD} mt-1.5`} defaultValue={programs[0]?.id ?? ""}>
+              {programs.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.title}
+                </option>
+              ))}
             </select>
           </label>
 
