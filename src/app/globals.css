@@ -254,7 +254,7 @@ details[open] > .menu-panel {
    Nav would still visibly flash because the snapshot doesn't know about
    React's tree, only what's on screen. Naming it and killing its own
    transition keeps it visually still while page content moves under it. */
-nav[data-site-nav] {
+header[data-site-nav] {
   view-transition-name: site-nav;
 }
 ::view-transition-group(site-nav) {

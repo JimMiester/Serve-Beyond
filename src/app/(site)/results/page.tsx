@@ -33,14 +33,16 @@ export default function ResultsPage() {
           {testimonials.map((t) => (
             <li key={t.name}>
               <Card className="p-8">
-                <blockquote className="font-display text-[clamp(1.25rem,2.2vw,1.6rem)] leading-[1.4] text-navy">
-                  <p>&ldquo;{t.quote}&rdquo;</p>
-                </blockquote>
-                <figcaption className="mt-5 flex items-center gap-3">
-                  <span className="h-px w-8 bg-gold" aria-hidden="true" />
-                  <span className="text-[15px] font-semibold text-navy">{t.name}</span>
-                  <span className="text-[14px] text-navy/55">{t.detail}</span>
-                </figcaption>
+                <figure>
+                  <blockquote className="font-display text-[clamp(1.25rem,2.2vw,1.6rem)] leading-[1.4] text-navy">
+                    <p>&ldquo;{t.quote}&rdquo;</p>
+                  </blockquote>
+                  <figcaption className="mt-5 flex items-center gap-3">
+                    <span className="h-px w-8 bg-gold" aria-hidden="true" />
+                    <span className="text-[15px] font-semibold text-navy">{t.name}</span>
+                    <span className="text-[14px] text-navy/55">{t.detail}</span>
+                  </figcaption>
+                </figure>
               </Card>
             </li>
           ))}
