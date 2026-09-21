@@ -9,18 +9,26 @@
  * one ahead of a page that actually needs it.
  */
 export default function Card({
+  as: Tag = "div",
   variant = "default",
   className = "",
   children,
+  ...rest
 }: {
+  as?: React.ElementType;
   variant?: "default" | "featured";
   className?: string;
   children: React.ReactNode;
+  [key: string]: unknown;
 }) {
   const base =
     variant === "featured"
       ? "rounded-[var(--radius-card)] bg-navy text-white shadow-[0_24px_60px_-24px_rgba(15,36,48,0.55)]"
       : "rounded-[var(--radius-card)] border border-navy/10 bg-cream";
 
-  return <div className={`${base} ${className}`}>{children}</div>;
+  return (
+    <Tag className={`${base} ${className}`} {...rest}>
+      {children}
+    </Tag>
+  );
 }

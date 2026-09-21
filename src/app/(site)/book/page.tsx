@@ -1,4 +1,5 @@
 import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
 import PageTransition from "@/components/ui/PageTransition";
 import { createClient } from "@/lib/supabase/server";
 import { computeAvailableSlots } from "./availability";
@@ -66,7 +67,7 @@ export default async function BookPage({
         )}
         {error && <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-[15px] text-red-700">{error}</p>}
 
-        <form method="get" className="mt-8 grid gap-4 sm:grid-cols-3">
+        <Card as="form" method="get" className="mt-8 grid gap-4 p-6 sm:grid-cols-3 sm:p-8">
           <label className="block">
             <span className="block text-[13px] font-medium text-navy/70">Court</span>
             <select
@@ -107,35 +108,37 @@ export default async function BookPage({
           <Button size="sm" variant="outline" className="sm:col-span-3">
             Check availability
           </Button>
-        </form>
+        </Card>
 
-        <h2 className="mt-10 text-[15px] font-semibold uppercase tracking-[0.1em] text-navy/60">
-          Available times, {selectedDate}
-        </h2>
+        <Card className="mt-6 p-6 sm:p-8">
+          <h2 className="text-[15px] font-semibold uppercase tracking-[0.1em] text-navy/60">
+            Available times, {selectedDate}
+          </h2>
 
-        {slots.length === 0 ? (
-          <p className="mt-4 text-[15px] text-navy/60">No open slots this day. Try another date.</p>
-        ) : (
-          <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {slots.map((slot) => (
-              <li key={slot.startsAt}>
-                <form action={createBooking}>
-                  <input type="hidden" name="court_id" value={selectedCourt} />
-                  <input type="hidden" name="program_id" value={selectedProgram} />
-                  <input type="hidden" name="date" value={selectedDate} />
-                  <input type="hidden" name="starts_at" value={slot.startsAt} />
-                  <input type="hidden" name="ends_at" value={slot.endsAt} />
-                  <button
-                    type="submit"
-                    className="w-full rounded-xl border border-navy/15 py-3 text-[14px] font-medium text-navy transition-colors hover:border-emerald-600 hover:bg-emerald-50"
-                  >
-                    {slot.label}
-                  </button>
-                </form>
-              </li>
-            ))}
-          </ul>
-        )}
+          {slots.length === 0 ? (
+            <p className="mt-4 text-[15px] text-navy/60">No open slots this day. Try another date.</p>
+          ) : (
+            <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {slots.map((slot) => (
+                <li key={slot.startsAt}>
+                  <form action={createBooking}>
+                    <input type="hidden" name="court_id" value={selectedCourt} />
+                    <input type="hidden" name="program_id" value={selectedProgram} />
+                    <input type="hidden" name="date" value={selectedDate} />
+                    <input type="hidden" name="starts_at" value={slot.startsAt} />
+                    <input type="hidden" name="ends_at" value={slot.endsAt} />
+                    <button
+                      type="submit"
+                      className="w-full rounded-xl border border-navy/15 py-3 text-[14px] font-medium text-navy transition-colors hover:border-emerald-600 hover:bg-emerald-50"
+                    >
+                      {slot.label}
+                    </button>
+                  </form>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
 
         {!user && (
           <p className="mt-6 text-[14px] text-navy/60">

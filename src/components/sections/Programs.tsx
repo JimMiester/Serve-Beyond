@@ -1,5 +1,6 @@
 import Skeleton from "@/components/ui/Skeleton";
 import Reveal from "@/components/ui/Reveal";
+import Card from "@/components/ui/Card";
 import Image from "next/image";
 import { Link } from "next-view-transitions";
 import SectionHead from "@/components/ui/SectionHead";
@@ -33,7 +34,7 @@ export default async function Programs() {
                   href={`/coaching/${p.slug}`}
                   className="group block rounded-2xl transition-transform duration-200 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-600"
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-navy/10">
+                  <Card className="relative aspect-[4/3] overflow-hidden">
                     {image ? (
                       <Image
                         src={image}
@@ -46,7 +47,7 @@ export default async function Programs() {
                       <Skeleton className="absolute inset-0" />
                     )}
                     <div className="absolute inset-0 transition-colors duration-300 group-hover:bg-navy/[0.06]" />
-                  </div>
+                  </Card>
 
                   <h3 className="mt-5 font-display text-[22px] leading-tight text-navy">{p.title}</h3>
                   <p className="mt-2 text-[15px] leading-[1.6] text-navy/65">{p.blurb}</p>

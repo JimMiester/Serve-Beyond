@@ -1,5 +1,6 @@
 import Skeleton from "@/components/ui/Skeleton";
 import Reveal from "@/components/ui/Reveal";
+import Card from "@/components/ui/Card";
 import Image from "next/image";
 import SectionHead from "@/components/ui/SectionHead";
 import Button from "@/components/ui/Button";
@@ -32,7 +33,7 @@ export default async function Coaches() {
             const image = getPublicImageUrl(c.photo_path);
             return (
               <li key={c.id} className="group">
-                <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-navy/10">
+                <Card className="relative aspect-[4/5] overflow-hidden">
                   {image ? (
                     <Image
                       src={image}
@@ -44,7 +45,7 @@ export default async function Coaches() {
                   ) : (
                     <Skeleton className="absolute inset-0" />
                   )}
-                </div>
+                </Card>
 
                 <div className="mt-5 flex items-baseline justify-between gap-4">
                   <h3 className="font-display text-[23px] leading-tight text-navy">{c.name}</h3>
