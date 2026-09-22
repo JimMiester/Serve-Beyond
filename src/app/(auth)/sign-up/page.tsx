@@ -1,15 +1,14 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
-import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
-import { signUp } from "@/lib/supabase/auth-actions";
+import SignUpForm from "./SignUpForm";
 
 export default async function SignUpPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; email?: string }>;
 }) {
-  const { error } = await searchParams;
+  const { error, email } = await searchParams;
 
   return (
     <main id="main" className="relative flex min-h-svh w-full items-center justify-center overflow-hidden px-5">
@@ -57,47 +56,7 @@ export default async function SignUpPage({
           <h1 className="font-display text-[32px] text-navy">Create your account</h1>
           <p className="mt-2 text-[15px] text-navy/65">Booking takes a minute once you&rsquo;re signed in.</p>
 
-          {error && <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-[14px] text-red-700">{error}</p>}
-
-          <form action={signUp} className="mt-8 space-y-4">
-            <fieldset>
-              <legend className="block text-[13px] font-medium text-navy/70">I&rsquo;m signing up as</legend>
-              <div className="mt-1.5 grid grid-cols-2 gap-2">
-                <label className="has-checked:border-emerald-600 has-checked:bg-emerald-50 has-checked:text-emerald-700 flex cursor-pointer items-center justify-center rounded-xl border border-navy/15 px-4 py-3 text-[15px] font-medium text-navy/70 transition-colors">
-                  <input type="radio" name="intended_role" value="player" defaultChecked className="sr-only" />
-                  Player
-                </label>
-                <label className="has-checked:border-emerald-600 has-checked:bg-emerald-50 has-checked:text-emerald-700 flex cursor-pointer items-center justify-center rounded-xl border border-navy/15 px-4 py-3 text-[15px] font-medium text-navy/70 transition-colors">
-                  <input type="radio" name="intended_role" value="coach" className="sr-only" />
-                  Coach
-                </label>
-              </div>
-              <p className="mt-1.5 text-[13px] text-navy/50">
-                Signing up as a coach only flags interest. Listing is at the academy&rsquo;s discretion after review —
-                it does not happen automatically.
-              </p>
-            </fieldset>
-            <label className="block">
-              <span className="block text-[13px] font-medium text-navy/70">Email</span>
-              <input
-                type="email"
-                name="email"
-                required
-                className="mt-1.5 w-full rounded-xl border border-navy/15 px-4 py-3 text-[15px] outline-none focus-visible:border-emerald-600"
-              />
-            </label>
-            <label className="block">
-              <span className="block text-[13px] font-medium text-navy/70">Password</span>
-              <input
-                type="password"
-                name="password"
-                required
-                minLength={8}
-                className="mt-1.5 w-full rounded-xl border border-navy/15 px-4 py-3 text-[15px] outline-none focus-visible:border-emerald-600"
-              />
-            </label>
-            <Button className="w-full">Create account</Button>
-          </form>
+          <SignUpForm initialEmail={email ?? ""} error={error} />
 
           <p className="mt-6 text-center text-[14px] text-navy/60">
             Already have an account?{" "}
