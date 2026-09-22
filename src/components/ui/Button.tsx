@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 // active:scale matters more than hover here — most bookings happen on a phone,
 // where there is no hover state at all.
 const BASE =
-  "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-[background-color,border-color,transform] duration-200 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-4";
+  "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-[background-color,border-color,transform] duration-200 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-4 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100";
 
 const VARIANTS = {
   // emerald-600 rather than the logo's emerald: white on #00a878 is only 3.05:1.
@@ -24,12 +24,14 @@ export default function Button({
   variant = "emerald",
   size = "md",
   className = "",
+  disabled = false,
   children,
 }: {
   href?: string;
   variant?: keyof typeof VARIANTS;
   size?: keyof typeof SIZES;
   className?: string;
+  disabled?: boolean;
   children: ReactNode;
 }) {
   const cls = `${BASE} ${VARIANTS[variant]} ${SIZES[size]} ${className}`;
@@ -38,7 +40,7 @@ export default function Button({
       {children}
     </Link>
   ) : (
-    <button type="submit" className={cls}>
+    <button type="submit" className={cls} disabled={disabled}>
       {children}
     </button>
   );
