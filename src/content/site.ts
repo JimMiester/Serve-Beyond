@@ -102,11 +102,11 @@ export const faqs = [
   },
   {
     q: "How far ahead can I book?",
-    a: "Fourteen days for pay-as-you-go court hire, thirty days for members. Lessons open as soon as a coach publishes their availability, usually four weeks out.",
+    a: "Up to three months ahead for any court, class, or lesson — pick a date on the booking page and open slots show up right away.",
   },
   {
     q: "What is the cancellation policy?",
-    a: "Free cancellation up to twelve hours before your slot, refunded to the original payment method. Inside twelve hours the session is charged in full, because the coach and the court are already committed.",
+    a: "Cancel any time from your dashboard, free of charge. There's no deposit or prepayment taken when you book, so there's nothing to refund.",
   },
   {
     q: "Do you coach complete beginners?",

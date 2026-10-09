@@ -22,7 +22,12 @@ export async function createBookingAt(basePath: string, formData: FormData) {
   const params = new URLSearchParams({ court: courtId, date, program: programId });
 
   if (!user) {
-    redirect(`/sign-in?next=${encodeURIComponent(`${basePath}?${params.toString()}`)}`);
+    // Carries the slot too, unlike every other redirect below — this is
+    // the one case where it was genuinely valid and just needs the player
+    // signed in before resubmitting, not a failure that invalidated it.
+    const withSlot = new URLSearchParams(params);
+    withSlot.set("slot", startsAt);
+    redirect(`/sign-in?next=${encodeURIComponent(`${basePath}?${withSlot.toString()}`)}`);
   }
 
   const { data: profile } = await supabase.from("profiles").select("role, intended_role").eq("id", user.id).maybeSingle();

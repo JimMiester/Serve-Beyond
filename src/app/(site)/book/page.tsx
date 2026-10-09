@@ -80,7 +80,8 @@ async function BookingContent({ searchParams }: { searchParams: Promise<BookSear
     await getBookingData(searchParams);
 
   const courtName = courts.find((c) => c.id === selectedCourt)?.name ?? "Court";
-  const programTitle = programs.find((p) => p.id === selectedProgram)?.title ?? "Session";
+  const selectedProgramRow = programs.find((p) => p.id === selectedProgram);
+  const programTitle = selectedProgramRow?.title ?? "Session";
 
   // A slot link carries the current filters forward plus which slot is
   // picked (or none, to let the player change their mind) — same idea as
@@ -174,7 +175,7 @@ async function BookingContent({ searchParams }: { searchParams: Promise<BookSear
           time is selected above. */}
       <div className="mt-8 rounded-xl border border-emerald/30 bg-emerald-500/5 p-5">
         <h2 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-emerald">Confirm your booking</h2>
-        <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-[14px] sm:grid-cols-4">
+        <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-[14px] sm:grid-cols-5">
           <div>
             <dt className="text-white/50">Court</dt>
             <dd className="font-semibold text-white">{courtName}</dd>
@@ -192,6 +193,12 @@ async function BookingContent({ searchParams }: { searchParams: Promise<BookSear
           <div>
             <dt className="text-white/50">Programme</dt>
             <dd className="font-semibold text-white">{programTitle}</dd>
+          </div>
+          <div>
+            <dt className="text-white/50">Price</dt>
+            <dd className="font-semibold text-white">
+              {selectedProgramRow ? `₱${selectedProgramRow.price_from.toLocaleString()} / ${selectedProgramRow.price_unit}` : "—"}
+            </dd>
           </div>
         </dl>
 
@@ -220,10 +227,13 @@ async function BookingContent({ searchParams }: { searchParams: Promise<BookSear
         {!user && selectedSlot && (
           <p className="mt-4 text-center text-[14px] text-white/60">
             Confirming will ask you to{" "}
-            <a href="/sign-in?next=/book" className="font-semibold text-emerald">
+            <a
+              href={`/sign-in?next=${encodeURIComponent(slotHref(selectedSlot.startsAt))}`}
+              className="font-semibold text-emerald"
+            >
               sign in
             </a>
-            .
+            . You&rsquo;ll land right back here with this slot still selected.
           </p>
         )}
       </div>

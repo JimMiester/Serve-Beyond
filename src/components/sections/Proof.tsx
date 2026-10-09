@@ -1,8 +1,39 @@
 import CountUp from "@/components/ui/CountUp";
 import Reveal from "@/components/ui/Reveal";
-import { stats, testimonials } from "@/content/site";
+import { createClient } from "@/lib/supabase/server";
+import { stats as placeholderStats, testimonials } from "@/content/site";
 
-export default function Proof() {
+// Courts and coaches are counted live — site.ts's own numbers for these
+// two used to just be invented ("Eight courts" shown above a /courts page
+// that only ever had 3), which is the kind of thing a visitor can
+// disprove in one click. Active members and years coaching have no table
+// to count from, so those two stay as placeholderStats' labeled-invented
+// values until there's a real number to put there.
+async function getStats() {
+  const supabase = await createClient();
+  const [{ count: courtCount }, { count: coachCount }] = await Promise.all([
+    supabase.from("courts").select("*", { count: "exact", head: true }).eq("active", true),
+    supabase.from("coaches").select("*", { count: "exact", head: true }).eq("active", true),
+  ]);
+
+  return placeholderStats.map((s) => {
+    if (s.label === "Indoor courts" && courtCount != null) return { ...s, value: String(courtCount) };
+    if (s.label === "Certified coaches" && coachCount != null) return { ...s, value: String(coachCount) };
+    return s;
+  });
+}
+
+export default async function Proof() {
+  // Falls back to the placeholder figures rather than taking down the
+  // whole landing page — same reasoning as Hero/Programs/Coaches hiding
+  // on a Supabase error, just a fallback here instead of hiding, since a
+  // stat tile with no number at all reads as broken in a way an empty
+  // section doesn't.
+  const stats = await getStats().catch((error) => {
+    console.error(error);
+    return placeholderStats;
+  });
+
   return (
     <section className="py-20 sm:py-28">
       <div className="mx-auto max-w-[1400px] px-5 sm:px-8">

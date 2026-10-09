@@ -68,7 +68,8 @@ async function BookingContent({ searchParams }: { searchParams: Promise<BookSear
   const createBooking = createBookingAt.bind(null, "/court-booking");
 
   const courtName = courts.find((c) => c.id === selectedCourt)?.name ?? "Court";
-  const programTitle = programs.find((p) => p.id === selectedProgram)?.title ?? "Session";
+  const selectedProgramRow = programs.find((p) => p.id === selectedProgram);
+  const programTitle = selectedProgramRow?.title ?? "Session";
 
   function slotHref(startsAt: string | null) {
     const params = new URLSearchParams({ court: selectedCourt, date: selectedDate, program: selectedProgram });
@@ -148,7 +149,7 @@ async function BookingContent({ searchParams }: { searchParams: Promise<BookSear
           time is selected above. */}
       <div className="mt-8 rounded-xl border border-emerald/30 bg-emerald-500/5 p-5">
         <h2 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-emerald">Confirm your booking</h2>
-        <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-[14px] sm:grid-cols-4">
+        <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-[14px] sm:grid-cols-5">
           <div>
             <dt className="text-white/50">Court</dt>
             <dd className="font-semibold text-white">{courtName}</dd>
@@ -166,6 +167,12 @@ async function BookingContent({ searchParams }: { searchParams: Promise<BookSear
           <div>
             <dt className="text-white/50">Programme</dt>
             <dd className="font-semibold text-white">{programTitle}</dd>
+          </div>
+          <div>
+            <dt className="text-white/50">Price</dt>
+            <dd className="font-semibold text-white">
+              {selectedProgramRow ? `₱${selectedProgramRow.price_from.toLocaleString()} / ${selectedProgramRow.price_unit}` : "—"}
+            </dd>
           </div>
         </dl>
 
