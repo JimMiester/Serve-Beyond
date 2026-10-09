@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Button from "@/components/ui/Button";
+import ConfirmBookingButton from "@/components/ui/ConfirmBookingButton";
 import Dropdown from "@/components/ui/Dropdown";
 import DatePicker from "@/components/ui/DatePicker";
 import ClearFlashParams from "@/components/ui/ClearFlashParams";
@@ -184,7 +185,7 @@ async function BookingContent({ searchParams }: { searchParams: Promise<BookSear
                 <input type="hidden" name="date" value={selectedDate} />
                 <input type="hidden" name="starts_at" value={selectedSlot.startsAt} />
                 <input type="hidden" name="ends_at" value={selectedSlot.endsAt} />
-                <Button size="sm">Confirm booking</Button>
+                <ConfirmBookingButton />
               </form>
               <a href={slotHref(null)} className="text-[14px] font-medium text-white/60 hover:text-white">
                 Change time
