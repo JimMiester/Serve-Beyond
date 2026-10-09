@@ -19,7 +19,7 @@ export default async function SignInPage({
   const initialMode = mode === "coach" ? "coach" : "player";
 
   return (
-    <main id="main" tabIndex={-1} className="relative flex min-h-svh w-full items-center justify-center overflow-hidden px-5">
+    <main id="main" tabIndex={-1} className="relative flex min-h-svh w-full items-center justify-center overflow-x-hidden overflow-y-auto px-5 py-10">
       <Link
         href="/"
         aria-label="Back to homepage"
