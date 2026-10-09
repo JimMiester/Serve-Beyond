@@ -1,4 +1,4 @@
-import { Link } from "next-view-transitions";
+﻿import { Link } from "next-view-transitions";
 import type { ReactNode } from "react";
 
 // active:scale matters more than hover here — most bookings happen on a phone,
@@ -8,9 +8,10 @@ const BASE =
 
 const VARIANTS = {
   // emerald-600 rather than the logo's emerald: white on #00a878 is only 3.05:1.
-  emerald: "bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:outline-emerald-600",
+  emerald: "bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:outline-emerald",
   white: "bg-white text-navy hover:bg-cream focus-visible:outline-sky",
-  outline: "border border-navy/20 text-navy hover:border-navy/45 hover:bg-navy/5 focus-visible:outline-navy",
+  // Dark-surface outline — the whole product rides the dark page gradient now.
+  outline: "border border-white/25 text-white hover:border-white/50 hover:bg-white/10 focus-visible:outline-sky",
   onDark: "border border-white/25 text-white hover:border-white/50 hover:bg-white/10 focus-visible:outline-sky",
 };
 

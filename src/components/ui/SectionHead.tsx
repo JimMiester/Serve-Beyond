@@ -1,12 +1,16 @@
-/**
+﻿/**
  * Eyebrow + display heading + lede. Extracted because six sections use it
  * verbatim — not built ahead of the need.
+ *
+ * Default flipped to "dark": every call site across the app relies on the
+ * default (none pass `tone` explicitly), and the whole product now sits on
+ * the dark page gradient. `tone="light"` remains for any future light card.
  */
 export default function SectionHead({
   eyebrow,
   title,
   lede,
-  tone = "light",
+  tone = "dark",
   className = "",
 }: {
   eyebrow: string;
