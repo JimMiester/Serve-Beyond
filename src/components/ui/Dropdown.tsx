@@ -26,6 +26,7 @@ export default function Dropdown({
   placeholder = "Select…",
   variant = "bordered",
   onValueChange,
+  submitOnChange = false,
   className = "",
 }: {
   name: string;
@@ -34,11 +35,16 @@ export default function Dropdown({
   placeholder?: string;
   variant?: keyof typeof TRIGGER_VARIANTS;
   onValueChange?: (value: string) => void;
+  /** Submits the enclosing form the moment an option is picked — for a
+   * filter field like Court/Programme, not a create/edit form field where
+   * that would submit before the rest of the form is filled in. */
+  submitOnChange?: boolean;
   className?: string;
 }) {
   const [value, setValue] = useState(defaultValue);
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const hiddenRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     function handleClickAway(e: MouseEvent) {
@@ -56,11 +62,15 @@ export default function Dropdown({
     setValue(v);
     setOpen(false);
     onValueChange?.(v);
+    if (submitOnChange && hiddenRef.current) {
+      hiddenRef.current.value = v;
+      hiddenRef.current.form?.requestSubmit();
+    }
   }
 
   return (
     <div ref={rootRef} className={`relative ${className}`}>
-      <input type="hidden" name={name} value={value} />
+      <input ref={hiddenRef} type="hidden" name={name} value={value} />
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}

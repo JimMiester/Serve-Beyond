@@ -87,6 +87,7 @@ async function BookingContent({ searchParams }: { searchParams: Promise<BookSear
             defaultValue={selectedCourt}
             className="mt-1.5"
             options={courts.map((c) => ({ value: c.id, label: c.name }))}
+            submitOnChange
           />
         </label>
         <label className="block">
@@ -100,11 +101,9 @@ async function BookingContent({ searchParams }: { searchParams: Promise<BookSear
             defaultValue={selectedProgram}
             className="mt-1.5"
             options={programs.map((p) => ({ value: p.id, label: p.title }))}
+            submitOnChange
           />
         </label>
-        <Button size="sm" variant="outline" className="sm:col-span-3">
-          Check availability
-        </Button>
       </form>
 
       <div className="mt-8 border-t border-white/10 pt-8">
