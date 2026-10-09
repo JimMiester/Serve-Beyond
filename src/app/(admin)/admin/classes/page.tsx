@@ -1,11 +1,9 @@
 import PageTransition from "@/components/ui/PageTransition";
+import Dropdown from "@/components/ui/Dropdown";
 import { GlassCard } from "@/components/dashboard/glass";
 import { createClient } from "@/lib/supabase/server";
 import type { Coach, Program } from "@/lib/supabase/types";
 import { assignClassCoach } from "./actions";
-
-const FIELD =
-  "mt-1.5 w-full rounded-xl border border-white/15 px-4 py-3 text-[15px] outline-none focus-visible:border-emerald";
 
 export default async function AdminClassesPage() {
   const supabase = await createClient();
@@ -36,14 +34,12 @@ export default async function AdminClassesPage() {
                 </div>
                 <form action={assignClassCoach} className="flex items-center gap-3">
                   <input type="hidden" name="program_id" value={p.id} />
-                  <select name="coach_id" defaultValue={p.coach_id ?? ""} className={`${FIELD} mt-0 w-56 bg-navy`}>
-                    <option value="">Unassigned</option>
-                    {coaches.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
+                  <Dropdown
+                    name="coach_id"
+                    defaultValue={p.coach_id ?? ""}
+                    className="w-56"
+                    options={[{ value: "", label: "Unassigned" }, ...coaches.map((c) => ({ value: c.id, label: c.name }))]}
+                  />
                   <button
                     type="submit"
                     className="rounded-full border border-white/15 px-5 py-2.5 text-[14px] font-semibold text-white transition-colors hover:border-white/30 hover:bg-white/5"
