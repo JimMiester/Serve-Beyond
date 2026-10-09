@@ -1,12 +1,18 @@
+import type { Metadata } from "next";
 import PageTransition from "@/components/ui/PageTransition";
 import SectionHead from "@/components/ui/SectionHead";
 import { faqs } from "@/content/site";
+
+export const metadata: Metadata = {
+  title: "FAQs",
+  description: "Rackets, booking windows, cancellations, and more — everything to know before you book a court or a class.",
+};
 
 export default function FaqsPage() {
   return (
     <PageTransition>
       <main id="main" tabIndex={-1} className="scroll-mt-[60px] mx-auto max-w-[800px] px-5 pb-20 pt-[110px] sm:px-8">
-        <SectionHead eyebrow="FAQs" title="Before you book." />
+        <SectionHead eyebrow="FAQs" title="Before you book." level="h1" />
 
         <div className="mt-10">
           {faqs.map((f) => (

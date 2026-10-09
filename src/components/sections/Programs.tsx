@@ -24,7 +24,7 @@ export default async function Programs() {
         <Reveal>
           <SectionHead
             eyebrow="Programmes"
-            title="Four ways onto a court."
+            title={`${programs.length} ways onto a court.`}
             lede="Whether you are chasing a county ranking or just want a rally that lasts more than four shots, one of these fits."
           />
         </Reveal>

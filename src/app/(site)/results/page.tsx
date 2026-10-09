@@ -1,9 +1,18 @@
+import type { Metadata } from "next";
 import PageTransition from "@/components/ui/PageTransition";
 import SectionHead from "@/components/ui/SectionHead";
 import Card from "@/components/ui/Card";
-import { stats, testimonials } from "@/content/site";
+import { getStats } from "@/lib/stats";
+import { testimonials } from "@/content/site";
 
-export default function ResultsPage() {
+export const metadata: Metadata = {
+  title: "Results",
+  description: "What members actually say about training and playing at Serve & Beyond.",
+};
+
+export default async function ResultsPage() {
+  const stats = await getStats();
+
   return (
     <PageTransition>
       <main id="main" tabIndex={-1} className="scroll-mt-[60px] mx-auto max-w-[1000px] px-5 pb-20 pt-[110px] sm:px-8">
@@ -11,6 +20,7 @@ export default function ResultsPage() {
           eyebrow="Results"
           title="What members actually say."
           lede="No leaderboard, no tournament bracket yet — just the people who kept showing up."
+          level="h1"
         />
 
         <dl className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">

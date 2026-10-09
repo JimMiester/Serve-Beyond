@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import Card from "@/components/ui/Card";
 import ClearFlashParams from "@/components/ui/ClearFlashParams";
 import SignUpForm from "./SignUpForm";
+
+export const metadata: Metadata = {
+  title: "Create account",
+  robots: { index: false, follow: false },
+};
 
 export default async function SignUpPage({
   searchParams,

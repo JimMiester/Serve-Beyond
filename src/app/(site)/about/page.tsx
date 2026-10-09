@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import PageTransition from "@/components/ui/PageTransition";
 import SectionHead from "@/components/ui/SectionHead";
 import Card from "@/components/ui/Card";
+
+export const metadata: Metadata = {
+  title: "About us",
+  description:
+    "Why Serve & Beyond exists: real court and coach availability enforced server-side, no double bookings, no subscription fees.",
+};
 
 export default function AboutPage() {
   return (
@@ -10,6 +17,7 @@ export default function AboutPage() {
           eyebrow="About us"
           title="Court time that raises your whole game."
           lede="Serve & Beyond grew out of a simple frustration: the hardest part of playing more tennis was never the tennis. It was the group chats, the double bookings, the coach who had already promised that slot to someone else."
+          level="h1"
         />
 
         <div className="mt-14 space-y-6 text-[17px] leading-[1.75] text-white/75">

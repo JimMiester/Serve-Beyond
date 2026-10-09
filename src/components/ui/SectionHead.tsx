@@ -12,14 +12,20 @@ export default function SectionHead({
   lede,
   tone = "dark",
   className = "",
+  level = "h2",
 }: {
   eyebrow: string;
   title: React.ReactNode;
   lede?: string;
   tone?: "light" | "dark";
   className?: string;
+  /** "h1" on a standalone page where this is the only heading (most
+   * call sites); stays the "h2" default on the homepage, where Hero's own
+   * <h1> already exists and Programs/Coaches are sections within it. */
+  level?: "h1" | "h2";
 }) {
   const dark = tone === "dark";
+  const Heading = level;
   return (
     <header className={`max-w-2xl ${className}`}>
       <p
@@ -29,13 +35,13 @@ export default function SectionHead({
       >
         {eyebrow}
       </p>
-      <h2
+      <Heading
         className={`mt-4 font-display text-[clamp(2rem,4.4vw,3rem)] leading-[1.06] tracking-[-0.015em] ${
           dark ? "text-white" : "text-navy"
         }`}
       >
         {title}
-      </h2>
+      </Heading>
       {lede && (
         <p className={`mt-5 text-[17px] leading-[1.65] ${dark ? "text-cream/75" : "text-navy/70"}`}>
           {lede}

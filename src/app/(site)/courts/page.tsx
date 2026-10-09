@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import PageTransition from "@/components/ui/PageTransition";
 import SectionHead from "@/components/ui/SectionHead";
@@ -7,6 +8,11 @@ import { createClient } from "@/lib/supabase/server";
 import { getPublicImageUrl } from "@/lib/supabase/storage";
 import { site } from "@/content/site";
 import type { Court } from "@/lib/supabase/types";
+
+export const metadata: Metadata = {
+  title: "Our courts",
+  description: "Indoor, floodlit, climate-controlled tennis courts at our Metro Manila location. See every court and book one by the hour.",
+};
 
 export default async function CourtsPage() {
   const supabase = await createClient();
@@ -28,8 +34,9 @@ export default async function CourtsPage() {
       <main id="main" tabIndex={-1} className="scroll-mt-[60px] mx-auto w-full max-w-[1400px] px-5 pb-20 pt-[110px] sm:px-8">
         <SectionHead
           eyebrow="The facility"
-          title="Eight courts, one roof."
+          title={`${courts.length} ${courts.length === 1 ? "court" : "courts"}, one roof.`}
           lede="Indoor, floodlit, climate controlled. Rain has never cancelled a session here."
+          level="h1"
         />
 
         {/* One horizontal row rather than a wrapping grid — cards stay at

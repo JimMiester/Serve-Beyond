@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,6 +12,19 @@ import { getPublicImageUrl } from "@/lib/supabase/storage";
 import type { Coach, Program } from "@/lib/supabase/types";
 
 type ProgramRow = Program & { coaches: Coach | null };
+
+// Next dedupes identical fetches within one request, so this and the page
+// component's own query below only hit Supabase once in practice.
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const supabase = await createClient();
+  const { data } = await supabase.from("programs").select("title, blurb").eq("slug", slug).maybeSingle();
+  if (!data) return { title: "Class not found" };
+  return {
+    title: data.title,
+    description: data.blurb ?? `${data.title} at Serve & Beyond Tennis Academy.`,
+  };
+}
 
 export default async function ClassDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -30,6 +44,7 @@ export default async function ClassDetailPage({ params }: { params: Promise<{ sl
           eyebrow="Classes & pricing"
           title={program.title}
           lede={program.blurb ?? undefined}
+          level="h1"
         />
 
         <Card className="mt-10 overflow-hidden p-0">

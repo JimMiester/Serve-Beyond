@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import PageTransition from "@/components/ui/PageTransition";
@@ -7,6 +8,11 @@ import Skeleton from "@/components/ui/Skeleton";
 import { createClient } from "@/lib/supabase/server";
 import { getPublicImageUrl } from "@/lib/supabase/storage";
 import type { Program } from "@/lib/supabase/types";
+
+export const metadata: Metadata = {
+  title: "Classes & pricing",
+  description: "One format for every kind of player, from a first private lesson to a standing group clinic. See every class and its price.",
+};
 
 export default async function ClassesPage() {
   const supabase = await createClient();
@@ -18,9 +24,10 @@ export default async function ClassesPage() {
     <PageTransition>
       <main id="main" tabIndex={-1} className="scroll-mt-[60px] mx-auto max-w-[1400px] px-5 pb-20 pt-[110px] sm:px-8">
         <SectionHead
-          eyebrow="Classes &amp; pricing"
+          eyebrow="Classes & pricing"
           title="A format for every kind of player."
           lede="From your first private lesson to a standing group clinic, every session is built around one court, one price, no surprises."
+          level="h1"
         />
 
         <ul className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">

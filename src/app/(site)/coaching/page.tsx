@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import PageTransition from "@/components/ui/PageTransition";
 import SectionHead from "@/components/ui/SectionHead";
@@ -6,6 +7,11 @@ import Skeleton from "@/components/ui/Skeleton";
 import { createClient } from "@/lib/supabase/server";
 import { getPublicImageUrl } from "@/lib/supabase/storage";
 import type { Coach } from "@/lib/supabase/types";
+
+export const metadata: Metadata = {
+  title: "Our coaches",
+  description: "Certified coaches who still play league tennis themselves. See who's on the floor and book a session.",
+};
 
 export default async function CoachingPage() {
   const supabase = await createClient();
@@ -24,6 +30,7 @@ export default async function CoachingPage() {
           eyebrow="The coaches"
           title="Certified, and still competing."
           lede="Every coach on this floor holds a current governing-body certification and plays league tennis themselves."
+          level="h1"
         />
 
         <ul className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">

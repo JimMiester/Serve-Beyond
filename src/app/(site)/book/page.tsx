@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Dropdown from "@/components/ui/Dropdown";
@@ -12,6 +13,11 @@ import { getBookingData, type BookSearchParams as BaseBookSearchParams } from ".
 import { createBooking } from "./actions";
 
 type BookSearchParams = BaseBookSearchParams & { error?: string; booked?: string };
+
+export const metadata: Metadata = {
+  title: "Book a session",
+  description: "Pick a court, a day, and a programme — open slots show up right away, up to 3 months ahead.",
+};
 
 // One page, one card: every field already has a sane default (today, the
 // first court, the first program), so a multi-step wizard was adding clicks
@@ -31,6 +37,7 @@ export default async function BookPage({
           eyebrow="Book a session"
           title="Pick a time, walk on court."
           lede="Choose a court, a day, and a programme — open slots show up right below."
+          level="h1"
         />
 
         {(booked || error) && <ClearFlashParams params={["booked", "error"]} />}
