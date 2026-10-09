@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import Card from "@/components/ui/Card";
+import ClearFlashParams from "@/components/ui/ClearFlashParams";
 import SignUpForm from "./SignUpForm";
 
 export default async function SignUpPage({
@@ -11,11 +12,11 @@ export default async function SignUpPage({
   const { error, email } = await searchParams;
 
   return (
-    <main id="main" className="relative flex min-h-svh w-full items-center justify-center overflow-hidden px-5">
+    <main id="main" tabIndex={-1} className="relative flex min-h-svh w-full items-center justify-center overflow-hidden px-5">
       <Link
         href="/"
         aria-label="Back to homepage"
-        className="group fixed left-5 top-5 z-10 flex size-11 items-center justify-center rounded-full border border-navy/8 bg-white text-navy shadow-[0_12px_30px_-14px_rgba(15,36,48,0.35)] transition-colors hover:text-emerald-700 sm:left-8 sm:top-8"
+        className="group fixed left-5 top-5 z-10 flex size-11 items-center justify-center rounded-full border border-white/8 bg-white text-navy shadow-[0_12px_30px_-14px_rgba(15,36,48,0.35)] transition-colors hover:text-emerald sm:left-8 sm:top-8"
       >
         <svg
           width="18"
@@ -49,18 +50,19 @@ export default async function SignUpPage({
 
       <div className="relative w-full max-w-md">
         <Link href="/" className="mx-auto mb-10 block w-fit">
-          <Logo variant="dark" className="h-10 w-auto" />
+          <Logo className="h-10 w-auto" />
         </Link>
 
         <Card variant="elevated" className="enter-up p-8 sm:p-10">
-          <h1 className="font-display text-[32px] text-navy">Create your account</h1>
-          <p className="mt-2 text-[15px] text-navy/65">Booking takes a minute once you&rsquo;re signed in.</p>
+          <h1 className="font-display text-[32px] text-white">Create your account</h1>
+          <p className="mt-2 text-[15px] text-white/65">Booking takes a minute once you&rsquo;re signed in.</p>
 
+          {error && <ClearFlashParams params={["error"]} />}
           <SignUpForm initialEmail={email ?? ""} error={error} />
 
-          <p className="mt-6 text-center text-[14px] text-navy/60">
+          <p className="mt-6 text-center text-[14px] text-white/60">
             Already have an account?{" "}
-            <Link href="/sign-in" className="font-semibold text-emerald-700">
+            <Link href="/sign-in" className="font-semibold text-emerald">
               Sign in
             </Link>
           </p>

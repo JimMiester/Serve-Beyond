@@ -15,6 +15,8 @@ export type Court = {
   venue_id: string;
   name: string;
   active: boolean;
+  photo_path: string | null;
+  description: string | null;
 };
 
 export type Coach = {
@@ -26,6 +28,7 @@ export type Coach = {
   focus: string | null;
   photo_path: string | null;
   active: boolean;
+  profile_id: string | null;
 };
 
 export type Program = {
@@ -36,6 +39,8 @@ export type Program = {
   price_from: number;
   price_unit: string;
   photo_path: string | null;
+  capacity: number;
+  coach_id: string | null;
 };
 
 export type Profile = {

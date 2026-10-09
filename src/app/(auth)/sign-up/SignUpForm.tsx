@@ -1,6 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
+import { useFormStatus } from "react-dom";
 import Button from "@/components/ui/Button";
 import { signUp } from "@/lib/supabase/auth-actions";
 
@@ -8,6 +9,19 @@ type Errors = Partial<Record<"full_name" | "email" | "phone" | "password" | "con
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_RE = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+
+// useFormStatus only reports the parent <form>'s state from a component
+// nested inside it, so this can't just be inline in SignUpForm — it needs
+// signUp's own pending state, since that's the call actually waiting on
+// the Supabase Auth round trip before it can redirect home.
+function CreateAccountButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button className="w-full" disabled={pending}>
+      {pending ? "Creating account…" : "Create account"}
+    </Button>
+  );
+}
 
 export default function SignUpForm({ initialEmail, error }: { initialEmail: string; error?: string }) {
   const [fullName, setFullName] = useState("");
@@ -41,9 +55,9 @@ export default function SignUpForm({ initialEmail, error }: { initialEmail: stri
   return (
     <form action={signUp} onSubmit={handleSubmit} className="mt-8 space-y-4" noValidate>
       <fieldset>
-        <legend className="block text-[13px] font-medium text-navy/70">I&rsquo;m signing up as</legend>
+        <legend className="block text-[13px] font-medium text-white/70">I&rsquo;m signing up as</legend>
         <div className="mt-1.5 grid grid-cols-2 gap-2">
-          <label className="has-checked:border-emerald-600 has-checked:bg-emerald-50 has-checked:text-emerald-700 flex cursor-pointer items-center justify-center rounded-xl border border-navy/15 px-4 py-3 text-[15px] font-medium text-navy/70 transition-colors">
+          <label className="has-checked:border-emerald-600 has-checked:bg-emerald-600 has-checked:text-white flex cursor-pointer items-center justify-center rounded-xl border border-white/15 px-4 py-3 text-[15px] font-medium text-white/70 transition-colors">
             <input
               type="radio"
               name="intended_role"
@@ -54,7 +68,7 @@ export default function SignUpForm({ initialEmail, error }: { initialEmail: stri
             />
             Player
           </label>
-          <label className="has-checked:border-emerald-600 has-checked:bg-emerald-50 has-checked:text-emerald-700 flex cursor-pointer items-center justify-center rounded-xl border border-navy/15 px-4 py-3 text-[15px] font-medium text-navy/70 transition-colors">
+          <label className="has-checked:border-emerald-600 has-checked:bg-emerald-600 has-checked:text-white flex cursor-pointer items-center justify-center rounded-xl border border-white/15 px-4 py-3 text-[15px] font-medium text-white/70 transition-colors">
             <input
               type="radio"
               name="intended_role"
@@ -66,99 +80,99 @@ export default function SignUpForm({ initialEmail, error }: { initialEmail: stri
             Coach
           </label>
         </div>
-        <p className="mt-1.5 text-[13px] text-navy/50">
-          Signing up as a coach only flags interest. Listing is at the academy&rsquo;s discretion after review — it
-          does not happen automatically.
+        <p className="mt-1.5 text-[13px] text-white/50">
+          Signing up as a coach only flags interest. Your account works right away, but an admin still needs to
+          approve it before your coach dashboard unlocks.
         </p>
       </fieldset>
 
       <label className="block">
-        <span className="block text-[13px] font-medium text-navy/70">Full name</span>
+        <span className="block text-[13px] font-medium text-white/70">Full name</span>
         <input
           type="text"
           name="full_name"
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
-          className="mt-1.5 w-full rounded-xl border border-navy/15 px-4 py-3 text-[15px] outline-none focus-visible:border-emerald-600"
+          className="mt-1.5 w-full rounded-xl border border-white/15 px-4 py-3 text-[15px] outline-none focus-visible:border-emerald"
         />
         {errors.full_name && (
-          <p role="alert" aria-live="polite" className="mt-1 text-[13px] text-red-700">
+          <p role="alert" aria-live="polite" className="mt-1 text-[13px] text-red-400">
             {errors.full_name}
           </p>
         )}
       </label>
 
       <label className="block">
-        <span className="block text-[13px] font-medium text-navy/70">Email</span>
+        <span className="block text-[13px] font-medium text-white/70">Email</span>
         <input
           type="email"
           name="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="mt-1.5 w-full rounded-xl border border-navy/15 px-4 py-3 text-[15px] outline-none focus-visible:border-emerald-600"
+          className="mt-1.5 w-full rounded-xl border border-white/15 px-4 py-3 text-[15px] outline-none focus-visible:border-emerald"
         />
         {errors.email && (
-          <p role="alert" aria-live="polite" className="mt-1 text-[13px] text-red-700">
+          <p role="alert" aria-live="polite" className="mt-1 text-[13px] text-red-400">
             {errors.email}
           </p>
         )}
       </label>
 
       <label className="block">
-        <span className="block text-[13px] font-medium text-navy/70">Phone number</span>
+        <span className="block text-[13px] font-medium text-white/70">Phone number</span>
         <input
           type="tel"
           name="phone"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          className="mt-1.5 w-full rounded-xl border border-navy/15 px-4 py-3 text-[15px] outline-none focus-visible:border-emerald-600"
+          className="mt-1.5 w-full rounded-xl border border-white/15 px-4 py-3 text-[15px] outline-none focus-visible:border-emerald"
         />
         {errors.phone && (
-          <p role="alert" aria-live="polite" className="mt-1 text-[13px] text-red-700">
+          <p role="alert" aria-live="polite" className="mt-1 text-[13px] text-red-400">
             {errors.phone}
           </p>
         )}
       </label>
 
       <label className="block">
-        <span className="block text-[13px] font-medium text-navy/70">Password</span>
+        <span className="block text-[13px] font-medium text-white/70">Password</span>
         <input
           type="password"
           name="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="mt-1.5 w-full rounded-xl border border-navy/15 px-4 py-3 text-[15px] outline-none focus-visible:border-emerald-600"
+          className="mt-1.5 w-full rounded-xl border border-white/15 px-4 py-3 text-[15px] outline-none focus-visible:border-emerald"
         />
         {errors.password && (
-          <p role="alert" aria-live="polite" className="mt-1 text-[13px] text-red-700">
+          <p role="alert" aria-live="polite" className="mt-1 text-[13px] text-red-400">
             {errors.password}
           </p>
         )}
       </label>
 
       <label className="block">
-        <span className="block text-[13px] font-medium text-navy/70">Confirm password</span>
+        <span className="block text-[13px] font-medium text-white/70">Confirm password</span>
         <input
           type="password"
           name="confirm_password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          className="mt-1.5 w-full rounded-xl border border-navy/15 px-4 py-3 text-[15px] outline-none focus-visible:border-emerald-600"
+          className="mt-1.5 w-full rounded-xl border border-white/15 px-4 py-3 text-[15px] outline-none focus-visible:border-emerald"
         />
         {errors.confirm_password && (
-          <p role="alert" aria-live="polite" className="mt-1 text-[13px] text-red-700">
+          <p role="alert" aria-live="polite" className="mt-1 text-[13px] text-red-400">
             {errors.confirm_password}
           </p>
         )}
       </label>
 
       {error && (
-        <p role="alert" aria-live="polite" className="rounded-xl bg-red-50 px-4 py-3 text-[14px] text-red-700">
+        <p role="alert" aria-live="polite" className="rounded-xl bg-red-500/10 px-4 py-3 text-[14px] text-red-300">
           {error}
         </p>
       )}
 
-      <Button className="w-full">Create account</Button>
+      <CreateAccountButton />
     </form>
   );
 }
