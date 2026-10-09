@@ -14,6 +14,10 @@
     "motion-plus": {
       "type": "http",
       "url": "https://mcp.motion.dev/plus"
+    },
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com"
     }
   }
 }
