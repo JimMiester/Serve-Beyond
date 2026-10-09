@@ -1,4 +1,4 @@
-import Skeleton from "@/components/ui/Skeleton";
+﻿import Skeleton from "@/components/ui/Skeleton";
 import Reveal from "@/components/ui/Reveal";
 import Card from "@/components/ui/Card";
 import Image from "next/image";
@@ -11,11 +11,15 @@ import type { Program } from "@/lib/supabase/types";
 export default async function Programs() {
   const supabase = await createClient();
   const { data, error } = await supabase.from("programs").select("*").order("price_from", { ascending: true });
-  if (error) throw error;
+  // Hide the section rather than crash the whole landing page if Supabase is unreachable.
+  if (error) {
+    console.error(error);
+    return null;
+  }
   const programs = (data ?? []) as Program[];
 
   return (
-    <section id="programs" className="bg-cream py-20 sm:py-28">
+    <section id="programs" className="py-20 sm:py-28">
       <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
         <Reveal>
           <SectionHead
@@ -32,7 +36,7 @@ export default async function Programs() {
               <li key={p.slug}>
                 <Link
                   href={`/coaching/${p.slug}`}
-                  className="group block rounded-2xl transition-transform duration-200 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-600"
+                  className="group block rounded-2xl transition-transform duration-200 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald"
                 >
                   <Card className="relative aspect-[4/3] overflow-hidden">
                     {image ? (
@@ -46,12 +50,12 @@ export default async function Programs() {
                     ) : (
                       <Skeleton className="absolute inset-0" />
                     )}
-                    <div className="absolute inset-0 transition-colors duration-300 group-hover:bg-navy/[0.06]" />
+                    <div className="absolute inset-0 transition-colors duration-300 group-hover:bg-white/[0.06]" />
                   </Card>
 
-                  <h3 className="mt-5 font-display text-[22px] leading-tight text-navy">{p.title}</h3>
-                  <p className="mt-2 text-[15px] leading-[1.6] text-navy/65">{p.blurb}</p>
-                  <span className="mt-4 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
+                  <h3 className="mt-5 font-display text-[22px] leading-tight text-white">{p.title}</h3>
+                  <p className="mt-2 text-[15px] leading-[1.6] text-white/65">{p.blurb}</p>
+                  <span className="mt-4 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-emerald">
                     From ₱{p.price_from.toLocaleString()} / {p.price_unit}
                     <svg
                       width="13"

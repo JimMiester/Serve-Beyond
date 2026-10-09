@@ -6,7 +6,7 @@ import { stats, testimonials } from "@/content/site";
 export default function ResultsPage() {
   return (
     <PageTransition>
-      <main id="main" className="mx-auto max-w-[1000px] px-5 pb-20 pt-[110px] sm:px-8">
+      <main id="main" tabIndex={-1} className="scroll-mt-[60px] mx-auto max-w-[1000px] px-5 pb-20 pt-[110px] sm:px-8">
         <SectionHead
           eyebrow="Results"
           title="What members actually say."
@@ -18,10 +18,10 @@ export default function ResultsPage() {
             <Card key={s.label} className="p-6 text-center">
               <dt className="sr-only">{s.label}</dt>
               <dd>
-                <span className="block font-display text-[clamp(2rem,4vw,2.75rem)] leading-none text-navy">
+                <span className="block font-display text-[clamp(2rem,4vw,2.75rem)] leading-none text-white">
                   {s.value}
                 </span>
-                <span className="mt-2 block text-[13px] uppercase tracking-[0.14em] text-emerald-700">
+                <span className="mt-2 block text-[13px] uppercase tracking-[0.14em] text-emerald">
                   {s.label}
                 </span>
               </dd>
@@ -34,13 +34,13 @@ export default function ResultsPage() {
             <li key={t.name}>
               <Card className="p-8">
                 <figure>
-                  <blockquote className="font-display text-[clamp(1.25rem,2.2vw,1.6rem)] leading-[1.4] text-navy">
+                  <blockquote className="font-display text-[clamp(1.25rem,2.2vw,1.6rem)] leading-[1.4] text-white">
                     <p>&ldquo;{t.quote}&rdquo;</p>
                   </blockquote>
                   <figcaption className="mt-5 flex items-center gap-3">
                     <span className="h-px w-8 bg-gold" aria-hidden="true" />
-                    <span className="text-[15px] font-semibold text-navy">{t.name}</span>
-                    <span className="text-[14px] text-navy/55">{t.detail}</span>
+                    <span className="text-[15px] font-semibold text-white">{t.name}</span>
+                    <span className="text-[14px] text-white/55">{t.detail}</span>
                   </figcaption>
                 </figure>
               </Card>

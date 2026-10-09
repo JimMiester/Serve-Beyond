@@ -19,7 +19,7 @@ export default async function CoachingPage() {
 
   return (
     <PageTransition>
-      <main id="main" className="mx-auto max-w-[1400px] px-5 pb-20 pt-[110px] sm:px-8">
+      <main id="main" tabIndex={-1} className="scroll-mt-[60px] mx-auto max-w-[1400px] px-5 pb-20 pt-[110px] sm:px-8">
         <SectionHead
           eyebrow="The coaches"
           title="Certified, and still competing."
@@ -47,14 +47,14 @@ export default async function CoachingPage() {
                   </div>
                   <div className="p-5">
                     <div className="flex items-baseline justify-between gap-4">
-                      <h3 className="font-display text-[23px] leading-tight text-navy">{c.name}</h3>
-                      <span className="shrink-0 text-[13px] font-medium text-navy/50">{c.years} yrs</span>
+                      <h3 className="font-display text-[23px] leading-tight text-white">{c.name}</h3>
+                      <span className="shrink-0 text-[13px] font-medium text-white/50">{c.years} yrs</span>
                     </div>
-                    <p className="mt-2 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
+                    <p className="mt-2 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-emerald">
                       <span className="size-1.5 rounded-full bg-gold" aria-hidden="true" />
-                      {c.role} · {c.cert}
+                      {c.cert ? `${c.role}, ${c.cert}` : c.role}
                     </p>
-                    <p className="mt-2 text-[15px] leading-[1.6] text-navy/65">{c.focus}</p>
+                    <p className="mt-2 text-[15px] leading-[1.6] text-white/65">{c.focus}</p>
                   </div>
                 </Card>
               </li>

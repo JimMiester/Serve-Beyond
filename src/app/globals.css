@@ -37,17 +37,67 @@
      Hero display:       clamp(2.75rem, 7.2vw, 4rem) */
 
 :root {
-  --background: var(--color-cream);
-  --foreground: var(--color-navy);
+  --background: var(--color-navy);
+  --foreground: #ffffff;
+
+  /* Dark, moody backdrop: deep navy-charcoal base with a soft steel-blue
+     glow bled in from the upper right, fading with no hard edges. Shared
+     by <body> and .dashboard-bg (below) via this one variable, so the
+     marketing site and the authenticated app ride the same canvas instead
+     of each declaring its own copy. Was a light cream/mint/sky wash; this
+     reverts to (and finishes) the dark system admin-login and
+     AccountMismatchNotice were already built against. */
+  --page-gradient:
+    radial-gradient(ellipse 900px 700px at 75% 15%, rgba(91, 192, 235, 0.16), transparent 60%),
+    linear-gradient(180deg, #0f151d 0%, #101923 45%, #0d1218 100%);
 }
 
 body {
-  background: var(--background);
+  background: var(--page-gradient);
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
-/* Film grain. One tiled turbulence tile, kept under 8% so it reads as stock, not noise. */
+/* Horizontal scroll rows (e.g. the courts showcase) — a themed, thin
+   scrollbar instead of the OS default, since craft-floor calls this out as
+   one of the browser-chrome details that ships unthemed most often. */
+.scroll-row {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+.scroll-row::-webkit-scrollbar {
+  height: 6px;
+}
+.scroll-row::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-row::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+}
+.scroll-row::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Film grain. One tiled turbulence tile, kept faint so it reads as a
+   tactile surface, not visible noise. Fixed + sitewide (not scrolling with
+   content) so it reads as one continuous material regardless of page
+   height, short (a FAQ list) or long (a coaches roster). Elements that
+   used to carry their own local .grain (e.g. Hero) now rely on this. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  z-index: 1;
+}
+
+/* Kept for any element that still wants a local (scrolling, section-sized)
+   grain layer rather than the fixed sitewide one above. */
 .grain::after {
   content: "";
   position: absolute;
@@ -200,6 +250,47 @@ details[open] > .menu-panel {
   animation: serve-release 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* Coach-application waiting room: a ball actually falls under gravity —
+   fast down, slow up — so each keyframe carries its own easing into the
+   next stop, rather than one timing function smoothed over the whole
+   loop. The shadow compresses opposite the ball's height as the one cue
+   that it's landing, not just moving up and down. */
+@keyframes pending-ball-bounce {
+  0% { transform: translateY(0); animation-timing-function: cubic-bezier(0.25, 0.85, 0.35, 1); }
+  50% { transform: translateY(-36px); animation-timing-function: cubic-bezier(0.65, 0, 0.75, 0.15); }
+  100% { transform: translateY(0); }
+}
+@keyframes pending-ball-shadow {
+  0%, 100% { transform: scaleX(1); opacity: 0.3; }
+  50% { transform: scaleX(0.55); opacity: 0.12; }
+}
+.pending-ball {
+  animation: pending-ball-bounce 1s infinite;
+}
+.pending-ball-shadow {
+  animation: pending-ball-shadow 1s infinite;
+}
+
+/* Custom Dropdown's option panel (src/components/ui/Dropdown.tsx). */
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+}
+.dropdown-panel-enter {
+  transform-origin: top;
+  animation: dropdown-in 0.16s ease-out both;
+}
+
+/* BookingConfirmedDialog (src/components/ui/BookingConfirmedDialog.tsx). */
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
@@ -272,5 +363,177 @@ header[data-site-nav] {
    a click during the ~260ms transition is silently lost. */
 ::view-transition {
   pointer-events: none;
+}
+
+/* --- Player dashboard: liquid-glass surfaces ---------------------------
+   Scoped here rather than folded into the shared Card/Button components:
+   no other page uses this look, and those components don't use
+   tailwind-merge, so layering glass classes on top of their own
+   background/border classes would fight the cascade unpredictably.
+
+   --accent is the single token every accent-colored dashboard element
+   reads (buttons, active nav pill, active chart bar, ring's "completed"
+   arc, pulse dot) — swap the whole page's accent from this one line.
+
+   Retuned to sit next to the marketing site's own cream/navy pages rather
+   than read as a separate "app" visual system: a deeper, quieter green
+   than the logo's full-chroma emerald (#00a878, reserved for the
+   marketing surfaces), plus a lighter accent-light for chart bars/dots,
+   used directly rather than computed — a fixed value here means the
+   weekly chart's bar gradient and a real "highlight" swatch aren't just
+   an automatic tint/shade of the deep fill. */
+:root {
+  /* Was a muted, deliberately-darkened green so the dashboard wouldn't
+     read as its own "app" palette next to the marketing site's light
+     cream/navy pages. Now that both share the same dark canvas, the
+     logo's real full-chroma emerald reads better against it anyway
+     (~5.2:1 vs. navy, better than its 3.05:1 against white) — one accent
+     for the whole product instead of a dashboard-only step-down. */
+  --accent: var(--color-emerald);
+  --accent-soft: rgba(0, 168, 120, 0.18);
+  --accent-deep: color-mix(in srgb, var(--color-emerald) 70%, black);
+  --accent-light: #3ddba3;
+}
+
+/* Same canvas as <body> (see --page-gradient) — the authenticated app and
+   the marketing site are one continuous dark system, not two palettes. */
+.dashboard-bg {
+  background: var(--page-gradient);
+}
+
+/*
+  Deliberately NOT setting position, border, or border-radius here: this
+  class gets combined with Tailwind utilities for all three on different
+  elements (fixed + rounded-none on the sidebar, sticky + a border-bottom
+  only on the top bar, rounded-3xl + a full border on content cards), and
+  unlayered CSS (this file) always beats Tailwind's own layered utilities
+  regardless of source order or specificity — anything set here for those
+  properties would silently win over every Tailwind override, everywhere
+  this class is used. Only the glass surface itself (blur, translucency,
+  shadow) lives here; each usage site owns its own shape via Tailwind.
+*/
+/* Dark glass: a barely-there light lift off the dark canvas, not a bright
+   frosted-white panel — matches the rgba(255,255,255,0.05)/border-white/10
+   recipe admin-login and AccountMismatchNotice were already built with. */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  transition: box-shadow 0.28s ease, background 0.28s ease;
+}
+
+/* Hover-lift is opt-in (content cards only) — the sidebar and top bar
+   also use .glass-card for their surface but are persistent chrome, not
+   interactive cards, so they shouldn't lift/brighten on hover. */
+.glass-card-interactive {
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease, background 0.28s ease;
+}
+.glass-card-interactive:hover {
+  transform: translateY(-6px);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-card,
+  .glass-card-interactive {
+    transition: none;
+  }
+  .glass-card-interactive:hover {
+    transform: none;
+  }
+}
+
+/* Mount fade-and-rise, staggered per card via inline animation-delay. */
+@keyframes dash-enter {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+.dash-enter {
+  animation: dash-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dash-enter {
+    animation: none;
+  }
+}
+
+/* Status dot on the "Upcoming Sessions" stat — opacity+shadow loop rather
+   than Tailwind's default animate-pulse, so it reads as a glow, not a
+   flat fade, against the glass surface. */
+@keyframes dash-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 var(--accent-soft);
+  }
+  50% {
+    opacity: 0.6;
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+}
+.dash-pulse-dot {
+  animation: dash-pulse 2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dash-pulse-dot {
+    animation: none;
+  }
+}
+
+/* Nav's primary CTA pill (Get Started / the signed-in player's name) —
+   frosted glass at rest (translucent white, heavy blur, bright top edge
+   for a rim-light, soft outer glow), with a translucent sky-to-emerald
+   (this project's real brand blue/green) glass sweeping in from the left
+   on hover — still see-through, so the blurred nav bar stays faintly
+   visible through the tint. Text stays white in both states since the
+   base is already glass-on-dark-navy; unlike the previous opaque-fill
+   version, there's no light/dark resting-state mismatch to correct here.
+   transform: scaleX() again instead of width, for the same reason as
+   before: width animates layout (reflow every frame), scaleX() from a
+   left transform-origin gives the identical sweep as a GPU-composited
+   transform. */
+.glass-sweep {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-top-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  color: #fff;
+  font-family: -apple-system, var(--font-sans), sans-serif;
+  font-weight: 500;
+}
+.glass-sweep::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: left;
+  /* Sky #5bc0eb and emerald #00a878 (this project's real brand colors)
+     at 35% alpha, written as literal rgba rather than the newer
+     rgb(from ...) relative-color syntax — safer given color-mix() already
+     caused one runtime-resolution bug earlier; plain rgba compiles the
+     same way .dashboard-bg's gradients already do, proven to work. */
+  background: linear-gradient(90deg, rgba(91, 192, 235, 0.35), rgba(0, 168, 120, 0.35));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: transform 0.35s ease;
+}
+.glass-sweep:hover::before {
+  transform: scaleX(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .glass-sweep::before {
+    transition: none;
+  }
 }
 

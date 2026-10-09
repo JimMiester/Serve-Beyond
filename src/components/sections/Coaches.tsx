@@ -11,11 +11,15 @@ import type { Coach } from "@/lib/supabase/types";
 export default async function Coaches() {
   const supabase = await createClient();
   const { data, error } = await supabase.from("coaches").select("*").eq("active", true).order("years", { ascending: false });
-  if (error) throw error;
+  // Hide the section rather than crash the whole landing page if Supabase is unreachable.
+  if (error) {
+    console.error(error);
+    return null;
+  }
   const coaches = (data ?? []) as Coach[];
 
   return (
-    <section id="coaches" className="bg-cream py-20 sm:py-28">
+    <section id="coaches" className="py-20 sm:py-28">
       <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
         <Reveal className="flex flex-wrap items-end justify-between gap-8">
           <SectionHead
@@ -48,16 +52,16 @@ export default async function Coaches() {
                 </Card>
 
                 <div className="mt-5 flex items-baseline justify-between gap-4">
-                  <h3 className="font-display text-[23px] leading-tight text-navy">{c.name}</h3>
-                  <span className="shrink-0 text-[13px] font-medium text-navy/50">{c.years} yrs</span>
+                  <h3 className="font-display text-[23px] leading-tight text-white">{c.name}</h3>
+                  <span className="shrink-0 text-[13px] font-medium text-white/50">{c.years} yrs</span>
                 </div>
 
                 {/* The one gold detail in this section. */}
-                <p className="mt-2 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
+                <p className="mt-2 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-emerald">
                   <span className="size-1.5 rounded-full bg-gold" aria-hidden="true" />
-                  {c.role} · {c.cert}
+                  {c.cert ? `${c.role}, ${c.cert}` : c.role}
                 </p>
-                <p className="mt-2 text-[15px] leading-[1.6] text-navy/65">{c.focus}</p>
+                <p className="mt-2 text-[15px] leading-[1.6] text-white/65">{c.focus}</p>
               </li>
             );
           })}

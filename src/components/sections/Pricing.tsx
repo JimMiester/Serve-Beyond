@@ -1,4 +1,4 @@
-import Reveal from "@/components/ui/Reveal";
+﻿import Reveal from "@/components/ui/Reveal";
 import SectionHead from "@/components/ui/SectionHead";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
@@ -6,7 +6,7 @@ import { pricing } from "@/content/site";
 
 export default function Pricing() {
   return (
-    <section id="pricing" className="bg-white py-20 sm:py-28">
+    <section id="pricing" className="py-20 sm:py-28">
       <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
         <Reveal>
           <SectionHead
@@ -24,11 +24,7 @@ export default function Pricing() {
                 className={p.featured ? "p-8 sm:p-10 lg:-mt-6" : "p-8 sm:p-10"}
               >
                 <div className="flex items-center justify-between gap-4">
-                  <h3
-                    className={`text-[13px] font-semibold uppercase tracking-[0.16em] ${
-                      p.featured ? "text-sky" : "text-emerald-700"
-                    }`}
-                  >
+                  <h3 className="text-[13px] font-semibold uppercase tracking-[0.16em] text-emerald">
                     {p.tier}
                   </h3>
                   {p.featured && (
@@ -39,14 +35,12 @@ export default function Pricing() {
                 </div>
 
                 <p className="mt-6 flex items-baseline gap-2">
-                  <span className={`font-display text-[46px] leading-none ${p.featured ? "text-white" : "text-navy"}`}>
-                    {p.price}
-                  </span>
-                  <span className={`text-[14px] ${p.featured ? "text-cream/60" : "text-navy/55"}`}>{p.unit}</span>
+                  <span className="font-display text-[46px] leading-none text-white">{p.price}</span>
+                  <span className="text-[14px] text-white/55">{p.unit}</span>
                 </p>
-                <p className={`mt-3 text-[15px] ${p.featured ? "text-cream/70" : "text-navy/65"}`}>{p.note}</p>
+                <p className="mt-3 text-[15px] text-white/65">{p.note}</p>
 
-                <ul className={`mt-8 space-y-3 border-t pt-8 ${p.featured ? "border-white/15" : "border-navy/10"}`}>
+                <ul className="mt-8 space-y-3 border-t border-white/10 pt-8">
                   {p.features.map((f) => (
                     <li key={f} className="flex gap-3 text-[15px] leading-[1.5]">
                       <svg
@@ -55,7 +49,7 @@ export default function Pricing() {
                         viewBox="0 0 17 17"
                         aria-hidden="true"
                         fill="none"
-                        stroke={p.featured ? "#5bc0eb" : "#006b4a"}
+                        stroke="#00a878"
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -63,7 +57,7 @@ export default function Pricing() {
                       >
                         <path d="m3.5 9 3.5 3.5 6.5-8" />
                       </svg>
-                      <span className={p.featured ? "text-cream/85" : "text-navy/75"}>{f}</span>
+                      <span className="text-white/75">{f}</span>
                     </li>
                   ))}
                 </ul>

@@ -1,36 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Court, Program } from "@/lib/supabase/types";
 import { Link } from "next-view-transitions";
+import Dropdown from "@/components/ui/Dropdown";
 
 export default function Hero() {
   return (
-    <section className="grain relative isolate flex min-h-svh flex-col justify-end overflow-hidden bg-navy pt-[72px]">
+    <section className="relative isolate flex min-h-svh flex-col justify-end overflow-hidden pt-[72px]">
       {/*
-        No photograph yet. The graded gradient below carries the hero on its
-        own; when the real shot lands — indoor facility, floor-to-ceiling glass,
-        low angle, coach adjusting a player's grip — add an <Image fill> here
-        above the gradient and the scrim will grade it without further changes.
+        No photograph yet. This section paints nothing of its own — the dark,
+        steel-blue-glow gradient and grain both live on <body> (globals.css),
+        so the whole page is one continuous backdrop instead of a copy
+        re-declared per section. When the real shot lands, introduce a scrim
+        sized to that image rather than giving this section its own fill.
       */}
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-30 bg-[radial-gradient(120%_90%_at_78%_18%,#2f6f8f_0%,#173b55_38%,#0b1b2b_78%)]"
-      />
-
-      {/* Cool grade: shadows toward navy with a faint emerald cast. */}
-      <div aria-hidden className="absolute inset-0 -z-20 bg-navy/25 mix-blend-multiply" />
-      <div aria-hidden className="absolute inset-0 -z-20 bg-emerald/15 mix-blend-soft-light" />
-
-      {/* Scrim: heavy bottom-left and top edge, near-transparent through upper right. */}
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,rgba(11,27,43,0.88)_0%,rgba(11,27,43,0.15)_52%,transparent_70%),linear-gradient(to_right,rgba(11,27,43,0.72)_0%,transparent_58%),linear-gradient(to_bottom,rgba(11,27,43,0.62)_0%,transparent_24%)]"
-      />
-
-      {/* Light bloom where the sun hits the glass. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-24 -top-16 -z-10 size-[560px] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.28),transparent_68%)] blur-2xl mix-blend-screen"
-      />
 
       {/* Bottom padding trimmed: the booking bar used to tuck into this space,
           and without that overlap the old pb-36 left a dead gap below the CTA. */}
@@ -50,7 +32,7 @@ export default function Hero() {
 
           <div className="lg:col-span-5 lg:col-start-8 lg:pb-2">
             <p
-              className="enter-up max-w-md text-[16px] leading-[1.6] text-cream/75"
+              className="enter-up max-w-md text-[16px] leading-[1.6] text-white/70"
               style={{ animationDelay: "380ms" }}
             >
               Book courts by the hour, train with certified coaches, and track
@@ -60,7 +42,7 @@ export default function Hero() {
             <Link
               href="/book"
               style={{ animationDelay: "480ms" }}
-              className="enter-up group mt-7 inline-flex items-center gap-4 rounded-full bg-emerald-600 py-1.5 pl-7 pr-1.5 text-[15px] font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky"
+              className="glass-sweep enter-up group mt-7 inline-flex items-center gap-4 rounded-full py-1.5 pl-7 pr-1.5 text-[15px] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky"
             >
               Book a Session
               {/* The focal moment: a serve. The badge winds up and releases
@@ -69,8 +51,8 @@ export default function Hero() {
                   back, ready for another. One gesture, reused as both
                   entrance and feedback, not two separate effects. */}
               <span
-                className="cta-badge flex size-11 items-center justify-center rounded-full bg-navy transition-transform duration-300 group-hover:-rotate-12"
-                style={{ animationDelay: "560ms" }}
+                className="cta-badge flex size-11 items-center justify-center rounded-full text-white transition-transform duration-300 group-hover:-rotate-12"
+                style={{ animationDelay: "560ms", backgroundColor: "var(--accent)" }}
               >
                 <svg width="15" height="15" viewBox="0 0 15 15" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M3.5 11.5 11.5 3.5M5 3.5h6.5V10" />
@@ -85,10 +67,10 @@ export default function Hero() {
 }
 
 const FIELD =
-  "w-full bg-transparent text-[15px] font-medium text-navy outline-none focus-visible:underline focus-visible:decoration-emerald focus-visible:decoration-2 focus-visible:underline-offset-4";
-const LABEL = "block text-[11px] font-semibold uppercase tracking-[0.14em] text-navy/45";
+  "w-full bg-transparent text-[15px] font-medium text-white outline-none focus-visible:underline focus-visible:decoration-emerald focus-visible:decoration-2 focus-visible:underline-offset-4";
+const LABEL = "block text-[11px] font-semibold uppercase tracking-[0.14em] text-white/45";
 
-/** Sits below the hero on the cream band — deliberately clear of the edge. */
+/** Sits below the hero on the page's dark gradient — deliberately clear of the edge. */
 export async function BookingBar() {
   const supabase = await createClient();
   const [
@@ -98,35 +80,39 @@ export async function BookingBar() {
     supabase.from("courts").select("*").eq("active", true).order("name"),
     supabase.from("programs").select("*").order("price_from"),
   ]);
-  if (courtsError) throw courtsError;
-  if (programsError) throw programsError;
+  // Hide the bar rather than crash the whole landing page if Supabase is unreachable.
+  if (courtsError || programsError) {
+    console.error(courtsError ?? programsError);
+    return null;
+  }
   const courts = (courtsData ?? []) as Court[];
   const programs = (programsData ?? []) as Program[];
 
   return (
     <div
-      className="enter-up relative z-20 mx-auto mt-8 w-full max-w-[1400px] px-5 sm:mt-10 sm:px-8"
+      className="enter-up relative z-20 mx-auto mt-4 w-full max-w-[1400px] px-5 sm:mt-6 sm:px-8"
       style={{ animationDelay: "600ms" }}
     >
-      {/* Opaque white, not translucent cream: it now sits ON cream, so the card
-          needs its own value to separate from the band behind it. */}
+      {/* Dark glass, same recipe as .glass-card: a frosted lift off the page
+          gradient rather than an opaque fill, so the form reads as part of
+          this dark surface instead of a bright cutout. */}
       <form
         action="/book"
-        className="rounded-2xl border border-navy/10 bg-white shadow-[0_18px_44px_-24px_rgba(11,27,43,0.30)]"
+        className="glass-card rounded-2xl border border-white/10 shadow-[0_18px_44px_-24px_rgba(0,0,0,0.5)]"
       >
         {/* Three fields, not four: exact time-slot picking depends on real
             availability, which can't live in a plain <select> — that choice
             happens on /book itself. This bar's job is just to route there. */}
-        <div className="grid grid-cols-1 divide-y divide-navy/10 sm:grid-cols-3 lg:grid-cols-[repeat(3,1fr)_auto] lg:divide-x lg:divide-y-0">
+        <div className="grid grid-cols-1 divide-y divide-white/10 sm:grid-cols-3 lg:grid-cols-[repeat(3,1fr)_auto] lg:divide-x lg:divide-y-0">
           <label className="block px-6 py-4">
             <span className={LABEL}>Court</span>
-            <select name="court" className={`${FIELD} mt-1.5`} defaultValue={courts[0]?.id ?? ""}>
-              {courts.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+            <Dropdown
+              name="court"
+              variant="plain"
+              className="mt-1.5"
+              defaultValue={courts[0]?.id ?? ""}
+              options={courts.map((c) => ({ value: c.id, label: c.name }))}
+            />
           </label>
 
           <label className="block px-6 py-4">
@@ -136,13 +122,13 @@ export async function BookingBar() {
 
           <label className="block px-6 py-4">
             <span className={LABEL}>Session Type</span>
-            <select name="program" className={`${FIELD} mt-1.5`} defaultValue={programs[0]?.id ?? ""}>
-              {programs.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.title}
-                </option>
-              ))}
-            </select>
+            <Dropdown
+              name="program"
+              variant="plain"
+              className="mt-1.5"
+              defaultValue={programs[0]?.id ?? ""}
+              options={programs.map((p) => ({ value: p.id, label: p.title }))}
+            />
           </label>
 
           <div className="flex items-center justify-end p-3">

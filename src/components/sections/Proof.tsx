@@ -4,18 +4,27 @@ import { stats, testimonials } from "@/content/site";
 
 export default function Proof() {
   return (
-    <section className="bg-navy py-20 sm:py-28">
+    <section className="py-20 sm:py-28">
       <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
-        <Reveal as="dl" stagger className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl bg-white/10 lg:grid-cols-4">
+        {/* Was a hairline grid via gap-px + a solid bg-navy match on each
+            cell — that trick needed a flat color identical to the section
+            background, which no longer exists now that the section sits
+            on the shared body gradient. Four separate glass-card tiles
+            instead, the same surface the dashboard's stat cards and this
+            page's Nav use. */}
+        <Reveal as="dl" stagger className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {stats.map((s) => (
-            <div key={s.label} className="bg-navy px-6 py-8 text-center sm:py-10">
+            <div
+              key={s.label}
+              className="glass-card rounded-[var(--radius-card)] border border-white/10 px-6 py-8 text-center sm:py-10"
+            >
               <dt className="sr-only">{s.label}</dt>
               <dd>
                 <CountUp
                   value={s.value}
                   className="block font-display text-[clamp(2.5rem,5vw,3.25rem)] leading-none text-white"
                 />
-                <span className="mt-3 block text-[13px] uppercase tracking-[0.16em] text-sky">{s.label}</span>
+                <span className="mt-3 block text-[13px] uppercase tracking-[0.16em] text-emerald">{s.label}</span>
               </dd>
             </div>
           ))}
@@ -31,7 +40,7 @@ export default function Proof() {
                 <figcaption className="mt-6 flex items-center gap-3">
                   <span className="h-px w-8 bg-gold" aria-hidden="true" />
                   <span className="text-[15px] font-semibold text-white">{t.name}</span>
-                  <span className="text-[14px] text-cream/55">{t.detail}</span>
+                  <span className="text-[14px] text-white/55">{t.detail}</span>
                 </figcaption>
               </figure>
             </li>

@@ -9,16 +9,39 @@ import Faq from "@/components/sections/Faq";
 import PageTransition from "@/components/ui/PageTransition";
 import Skeleton from "@/components/ui/Skeleton";
 
+function BookingBarSkeleton() {
+  return (
+    <div className="relative z-20 mx-auto mt-4 w-full max-w-[1400px] px-5 sm:mt-6 sm:px-8">
+      <div className="glass-card rounded-2xl border border-white/10 p-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-[repeat(3,1fr)_auto]">
+          <Skeleton className="h-[68px] rounded-xl" />
+          <Skeleton className="h-[68px] rounded-xl" />
+          <Skeleton className="h-[68px] rounded-xl" />
+          <Skeleton className="h-14 rounded-xl lg:w-14" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   return (
     <PageTransition>
-      <main id="main">
+      <main id="main" tabIndex={-1} className="scroll-mt-[60px]">
         <Hero />
-        <BookingBar />
-        {/* Bands alternate cream / navy so the scroll has rhythm. */}
+        {/* BookingBar needs a Supabase round trip (courts + programs) before
+            it can render — Suspense here means that wait doesn't block the
+            rest of the page's own HTML shell from streaming immediately. */}
+        <Suspense fallback={<BookingBarSkeleton />}>
+          <BookingBar />
+        </Suspense>
+        {/* One background for the whole page: the shared gradient lives on
+            <body> only. No section paints its own — every band here is
+            transparent, so there's one continuous backdrop, not a stack
+            of banded panels. */}
         <Suspense
           fallback={
-            <div className="bg-cream py-20 sm:py-28">
+            <div className="py-20 sm:py-28">
               <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
                 <Skeleton className="h-4 w-32 rounded" />
                 <Skeleton className="mt-4 h-10 w-96 max-w-full rounded-lg" />
@@ -36,7 +59,7 @@ export default function Home() {
         <HowItWorks />
         <Suspense
           fallback={
-            <div className="bg-cream py-20 sm:py-28">
+            <div className="py-20 sm:py-28">
               <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
                 <Skeleton className="h-4 w-32 rounded" />
                 <Skeleton className="mt-4 h-10 w-96 max-w-full rounded-lg" />

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { ViewTransitions } from "next-view-transitions";
 import "./globals.css";
@@ -36,7 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <style>{`[data-reveal]{opacity:1 !important;transform:none !important}`}</style>
           </noscript>
         </head>
-        <body className="min-h-full flex flex-col bg-cream text-navy">
+        <body className="min-h-full flex flex-col bg-navy text-white">
           <a
             href="#main"
             className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-white focus:px-5 focus:py-3 focus:text-[15px] focus:font-semibold focus:text-navy"
