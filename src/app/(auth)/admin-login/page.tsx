@@ -22,7 +22,7 @@ export default async function AdminLoginPage({
           {error && (
             <>
               <ClearFlashParams params={["error"]} />
-              <p className="mt-4 rounded-xl bg-red-500/10 px-4 py-3 text-[14px] text-red-300">{error}</p>
+              <p role="alert" className="mt-4 rounded-xl bg-red-500/10 px-4 py-3 text-[14px] text-red-300">{error}</p>
             </>
           )}
 

@@ -41,7 +41,7 @@ export default async function CoachApplicationsPage({
         {errorMessage && (
           <>
             <ClearFlashParams params={["error"]} />
-            <p className="mt-4 rounded-xl bg-red-500/10 px-4 py-3 text-[15px] text-red-300">{errorMessage}</p>
+            <p role="alert" className="mt-4 rounded-xl bg-red-500/10 px-4 py-3 text-[15px] text-red-300">{errorMessage}</p>
           </>
         )}
 

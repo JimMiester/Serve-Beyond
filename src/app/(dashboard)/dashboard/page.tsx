@@ -131,7 +131,7 @@ export default async function DashboardPage({
         {errorMessage && (
           <>
             <ClearFlashParams params={["error"]} />
-            <p className="mt-4 rounded-xl bg-red-500/10 px-4 py-3 text-[15px] text-red-300">{errorMessage}</p>
+            <p role="alert" className="mt-4 rounded-xl bg-red-500/10 px-4 py-3 text-[15px] text-red-300">{errorMessage}</p>
           </>
         )}
 

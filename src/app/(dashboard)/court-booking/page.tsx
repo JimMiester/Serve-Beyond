@@ -31,7 +31,7 @@ export default async function CourtBookingPage({
 
         {(booked || error) && <ClearFlashParams params={["booked", "error"]} />}
         {booked && <BookingConfirmedDialog />}
-        {error && <p className="mt-4 rounded-xl bg-red-500/10 px-4 py-3 text-[15px] text-red-300">{error}</p>}
+        {error && <p role="alert" className="mt-4 rounded-xl bg-red-500/10 px-4 py-3 text-[15px] text-red-300">{error}</p>}
 
         <Suspense fallback={<BookingSkeleton />}>
           <BookingContent searchParams={searchParams} />
