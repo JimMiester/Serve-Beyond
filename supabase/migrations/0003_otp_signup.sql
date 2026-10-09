@@ -1,10 +1,12 @@
--- Sign-up now requires email verification (a 6-digit OTP code, not a
--- link) before a profiles row is created. handle_new_user() previously
--- fired the instant an auth.users row was inserted; now it fires only
--- once that user's email is actually confirmed, so an unverified signup
--- has no profiles row at all. proxy.ts's route guard checks the auth
--- session's own email_confirmed_at for exactly this reason, never a
--- profiles lookup — the row may not exist yet.
+-- Sign-up now requires email verification (clicking the confirmation link)
+-- before a profiles row is created. handle_new_user() previously fired the
+-- instant an auth.users row was inserted; now it fires only once that
+-- user's email is actually confirmed, so an unverified signup has no
+-- profiles row at all. proxy.ts's route guard checks the auth session's
+-- own email_confirmed_at for exactly this reason, never a profiles
+-- lookup — the row may not exist yet. This holds regardless of whether
+-- confirmation happens via a link or a code — both just set
+-- email_confirmed_at the same way.
 drop trigger on_auth_user_created on auth.users;
 
 create or replace function handle_new_user()
