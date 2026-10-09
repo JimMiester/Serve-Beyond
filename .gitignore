@@ -51,3 +51,8 @@ next-env.d.ts
 .claude/
 .impeccable/
 supabase/.temp/
+
+# stray files from unrelated work, not part of this project
+/dashboard.js
+/frontend/
+/favicon_io*.zip
