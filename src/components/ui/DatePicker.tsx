@@ -54,6 +54,7 @@ export default function DatePicker({
   const [viewYear, setViewYear] = useState(() => Number(defaultValue.slice(0, 4)));
   const [viewMonth, setViewMonth] = useState(() => Number(defaultValue.slice(5, 7)) - 1);
   const rootRef = useRef<HTMLDivElement>(null);
+  const hiddenRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     function handleClickAway(e: MouseEvent) {
@@ -63,11 +64,18 @@ export default function DatePicker({
     return () => document.removeEventListener("mousedown", handleClickAway);
   }, []);
 
-  function goTo(iso: string) {
+  // Submits straight from the DOM node rather than waiting a render on
+  // React state, so the browser's GET navigation carries the just-picked
+  // date instead of the previous one.
+  function goTo(iso: string, submit = false) {
     setValue(iso);
     setText(formatFriendly(iso, min));
     setViewYear(Number(iso.slice(0, 4)));
     setViewMonth(Number(iso.slice(5, 7)) - 1);
+    if (submit && hiddenRef.current) {
+      hiddenRef.current.value = iso;
+      hiddenRef.current.form?.requestSubmit();
+    }
   }
 
   // Accepts YYYY-MM-DD only — unambiguous, and it's exactly what the field
@@ -75,7 +83,7 @@ export default function DatePicker({
   function commitTyped(raw: string) {
     const trimmed = raw.trim();
     if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed) && trimmed >= min && trimmed <= max) {
-      goTo(trimmed);
+      goTo(trimmed, true);
     } else {
       setText(formatFriendly(value, min));
     }
@@ -104,7 +112,7 @@ export default function DatePicker({
 
   return (
     <div ref={rootRef} className={`relative ${className}`}>
-      <input type="hidden" name={name} value={value} />
+      <input ref={hiddenRef} type="hidden" name={name} value={value} />
       <div className="relative">
         <input
           type="text"
@@ -198,7 +206,7 @@ export default function DatePicker({
                   type="button"
                   disabled={disabled}
                   onClick={() => {
-                    goTo(iso);
+                    goTo(iso, true);
                     setOpen(false);
                   }}
                   aria-current={isToday ? "date" : undefined}
