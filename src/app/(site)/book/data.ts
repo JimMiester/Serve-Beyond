@@ -38,9 +38,18 @@ export async function getBookingData(searchParams: Promise<BookSearchParams>) {
 
   const selectedCourt = court ?? courts[0]?.id ?? "";
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Manila" });
-  const selectedDate = /^\d{4}-\d{2}-\d{2}$/.test(date ?? "") ? date! : today;
-  const selectedProgram = program ?? programs[0]?.id ?? "";
   const maxDate = addMonthsISO(today, 3);
+  // Format-valid but out-of-range dates (a tampered or stale ?date=) clamp
+  // into the real booking window rather than being passed straight to the
+  // slot math, which would just quietly return an empty day.
+  const selectedDate = /^\d{4}-\d{2}-\d{2}$/.test(date ?? "")
+    ? date! < today
+      ? today
+      : date! > maxDate
+        ? maxDate
+        : date!
+    : today;
+  const selectedProgram = program ?? programs[0]?.id ?? "";
 
   const capacity = programs.find((p) => p.id === selectedProgram)?.capacity ?? 1;
 

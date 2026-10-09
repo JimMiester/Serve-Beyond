@@ -1,19 +1,25 @@
+import { site } from "@/content/site";
 import type { Booking } from "@/lib/supabase/types";
 
-/**
- * Academy hours, matching src/content/site.ts's stated 06:00–22:00 window.
- * A single fixed window every day, not a per-weekday schedule table — there
- * is no admin UI to edit such a table anyway (spec decision 6), so encoding
- * one would be unused flexibility.
- */
-const OPEN_HOUR = 6;
-const CLOSE_HOUR = 22;
 const SLOT_MINUTES = 60;
 
 /** The academy's one venue is in Metro Manila; a fixed UTC+8 offset is
  * baked in rather than threading timezone plumbing through for a single
  * market — see PRODUCT.md's Philippines-only operating context. */
 const TZ_OFFSET = "+08:00";
+
+/** Every weekday maps to one of site.hours' rows — the same data /courts
+ * displays, so the booking engine can never again offer hours the facility
+ * doesn't actually keep (it used to: every day ran 06:00–22:00 here while
+ * /courts advertised shorter weekend hours). `date` is a local calendar
+ * date ("YYYY-MM-DD"); Date.UTC + getUTCDay() reads its weekday without
+ * depending on the server's own timezone. */
+function hoursForDate(date: string): { openHour: number; closeHour: number } {
+  const [y, m, d] = date.split("-").map(Number);
+  const dow = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+  const row = site.hours.find((h) => h.dow.includes(dow));
+  return row ?? { openHour: 6, closeHour: 22 };
+}
 
 export type Slot = {
   startsAt: string; // ISO instant
@@ -44,8 +50,9 @@ export function computeAvailableSlots(
   capacity: number,
 ): Slot[] {
   const slots: Slot[] = [];
+  const { openHour, closeHour } = hoursForDate(date);
 
-  for (let hour = OPEN_HOUR; hour < CLOSE_HOUR; hour++) {
+  for (let hour = openHour; hour < closeHour; hour++) {
     const startsAt = new Date(`${date}T${String(hour).padStart(2, "0")}:00:00${TZ_OFFSET}`);
     const endsAt = new Date(startsAt.getTime() + SLOT_MINUTES * 60_000);
 

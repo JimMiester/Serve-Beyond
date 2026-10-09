@@ -12,10 +12,15 @@ export const site = {
   email: "hello@serveandbeyond.ph",
   address: ["Ortigas Indoor Tennis Centre", "128 Julia Vargas Avenue", "Pasig City 1605, Metro Manila"],
   region: "Metro Manila, Philippines",
+  // dow/openHour/closeHour are the single source of truth the booking engine
+  // reads (src/app/(site)/book/availability.ts) — days/time are just how
+  // this same data displays on /courts. Keeping both on one row means they
+  // can't drift the way they used to (slots used to offer hours up to 22:00
+  // on a Sunday the facility actually closes at 18:00).
   hours: [
-    { days: "Mon – Fri", time: "06:00 – 22:00" },
-    { days: "Saturday", time: "07:00 – 20:00" },
-    { days: "Sunday", time: "08:00 – 18:00" },
+    { days: "Mon – Fri", time: "06:00 – 22:00", dow: [1, 2, 3, 4, 5], openHour: 6, closeHour: 22 },
+    { days: "Saturday", time: "07:00 – 20:00", dow: [6], openHour: 7, closeHour: 20 },
+    { days: "Sunday", time: "08:00 – 18:00", dow: [0], openHour: 8, closeHour: 18 },
   ],
 };
 
