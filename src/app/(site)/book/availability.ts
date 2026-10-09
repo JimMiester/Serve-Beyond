@@ -22,13 +22,26 @@ export type Slot = {
 };
 
 /**
- * Every hourly slot for the given local date ("YYYY-MM-DD") that does not
- * overlap any of `existingBookings`. Pure function, no I/O — the caller
- * fetches existingBookings from Supabase and passes them in.
+ * Every hourly slot for the given local date ("YYYY-MM-DD") that the
+ * selected programme can still be booked into. Pure function, no I/O — the
+ * caller fetches courtBookings/ownBookingsElsewhere from Supabase and
+ * passes them in.
+ *
+ * `courtBookings` are this court's existing confirmed bookings, carrying
+ * their own program_id — multiple players can share a slot up to
+ * `capacity`, but only if they're all in the *same* programme (Group
+ * Clinics and Private Coaching, say, can't occupy the same court at once).
+ * `ownBookingsElsewhere` are the current player's own confirmed bookings
+ * (any court) — those block a slot outright regardless of capacity, since
+ * a player can't be in two sessions at once no matter how much room is
+ * left in either one.
  */
 export function computeAvailableSlots(
   date: string,
-  existingBookings: Pick<Booking, "starts_at" | "ends_at">[],
+  courtBookings: Pick<Booking, "starts_at" | "ends_at" | "program_id">[],
+  ownBookingsElsewhere: Pick<Booking, "starts_at" | "ends_at">[],
+  selectedProgramId: string,
+  capacity: number,
 ): Slot[] {
   const slots: Slot[] = [];
 
@@ -36,13 +49,23 @@ export function computeAvailableSlots(
     const startsAt = new Date(`${date}T${String(hour).padStart(2, "0")}:00:00${TZ_OFFSET}`);
     const endsAt = new Date(startsAt.getTime() + SLOT_MINUTES * 60_000);
 
-    const overlaps = existingBookings.some((b) => {
+    // Already started (today's earlier hours) — naturally a no-op for any
+    // future date, since every slot on it is already after now.
+    if (startsAt.getTime() <= Date.now()) continue;
+
+    const overlapsRange = (b: { starts_at: string; ends_at: string }) => {
       const bStart = new Date(b.starts_at).getTime();
       const bEnd = new Date(b.ends_at).getTime();
       return startsAt.getTime() < bEnd && endsAt.getTime() > bStart;
-    });
+    };
 
-    if (!overlaps) {
+    if (ownBookingsElsewhere.some(overlapsRange)) continue;
+
+    const overlappingHere = courtBookings.filter(overlapsRange);
+    const blockedByOtherProgramme = overlappingHere.some((b) => b.program_id !== selectedProgramId);
+    const sameProgrammeCount = overlappingHere.filter((b) => b.program_id === selectedProgramId).length;
+
+    if (!blockedByOtherProgramme && sameProgrammeCount < capacity) {
       slots.push({
         startsAt: startsAt.toISOString(),
         endsAt: endsAt.toISOString(),

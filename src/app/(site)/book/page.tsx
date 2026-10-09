@@ -1,155 +1,232 @@
+import { Suspense } from "react";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
+import Dropdown from "@/components/ui/Dropdown";
+import DatePicker from "@/components/ui/DatePicker";
+import SectionHead from "@/components/ui/SectionHead";
+import ClearFlashParams from "@/components/ui/ClearFlashParams";
+import BookingConfirmedDialog from "@/components/ui/BookingConfirmedDialog";
 import PageTransition from "@/components/ui/PageTransition";
-import { createClient } from "@/lib/supabase/server";
-import { computeAvailableSlots } from "./availability";
+import Skeleton from "@/components/ui/Skeleton";
+import { getBookingData, type BookSearchParams as BaseBookSearchParams } from "./data";
 import { createBooking } from "./actions";
-import type { Booking, Court, Program } from "@/lib/supabase/types";
 
+type BookSearchParams = BaseBookSearchParams & { error?: string; booked?: string };
+
+// One page, one card: every field already has a sane default (today, the
+// first court, the first program), so a multi-step wizard was adding clicks
+// a booking this short never needed. Changing a field just re-submits this
+// same GET form and the slot grid updates below it — no separate steps.
 export default async function BookPage({
   searchParams,
 }: {
-  searchParams: Promise<{ court?: string; date?: string; program?: string; error?: string; booked?: string }>;
+  searchParams: Promise<BookSearchParams>;
 }) {
-  const { court, date, program, error, booked } = await searchParams;
-
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const [
-    { data: courtsData, error: courtsError },
-    { data: programsData, error: programsError },
-  ] = await Promise.all([
-    supabase.from("courts").select("*").eq("active", true).order("name"),
-    supabase.from("programs").select("*").order("price_from"),
-  ]);
-  if (courtsError) throw courtsError;
-  if (programsError) throw programsError;
-  const courts = (courtsData ?? []) as Court[];
-  const programs = (programsData ?? []) as Program[];
-
-  const selectedCourt = court ?? courts[0]?.id ?? "";
-  const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Manila" });
-  const selectedDate = /^\d{4}-\d{2}-\d{2}$/.test(date ?? "") ? date! : today;
-  const selectedProgram = program ?? programs[0]?.id ?? "";
-
-  let slots: ReturnType<typeof computeAvailableSlots> = [];
-  if (selectedCourt) {
-    const dayStart = `${selectedDate}T00:00:00+08:00`;
-    const dayEnd = `${selectedDate}T23:59:59+08:00`;
-    const { data: existing, error: existingError } = await supabase
-      .from("bookings")
-      .select("starts_at, ends_at")
-      .eq("court_id", selectedCourt)
-      .eq("status", "confirmed")
-      .gte("starts_at", dayStart)
-      .lte("starts_at", dayEnd);
-    if (existingError) throw existingError;
-
-    slots = computeAvailableSlots(selectedDate, (existing ?? []) as Pick<Booking, "starts_at" | "ends_at">[]);
-  }
+  const { error, booked } = await searchParams;
 
   return (
     <PageTransition>
-      <main id="main" className="mx-auto max-w-[1000px] px-5 pb-20 pt-[110px] sm:px-8">
-        <h1 className="font-display text-[clamp(2rem,4vw,2.75rem)] text-navy">Book a court</h1>
+      <main id="main" tabIndex={-1} className="scroll-mt-[60px] mx-auto max-w-[720px] px-5 pb-24 pt-[110px] sm:px-8">
+        <SectionHead
+          eyebrow="Book a session"
+          title="Pick a time, walk on court."
+          lede="Choose a court, a day, and a programme — open slots show up right below."
+        />
 
-        {booked && (
-          <p className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-[15px] text-emerald-800">
-            Booked. See it on your{" "}
-            <a href="/account" className="font-semibold underline">
-              account page
-            </a>
-            .
-          </p>
-        )}
-        {error && <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-[15px] text-red-700">{error}</p>}
+        {(booked || error) && <ClearFlashParams params={["booked", "error"]} />}
+        {booked && <BookingConfirmedDialog />}
+        {error && <p className="mt-6 rounded-xl bg-red-500/10 px-4 py-3 text-[15px] text-red-300">{error}</p>}
 
-        <Card as="form" method="get" className="mt-8 grid gap-4 p-6 sm:grid-cols-3 sm:p-8">
-          <label className="block">
-            <span className="block text-[13px] font-medium text-navy/70">Court</span>
-            <select
-              name="court"
-              defaultValue={selectedCourt}
-              className="mt-1.5 w-full rounded-xl border border-navy/15 px-4 py-3 text-[15px]"
-            >
-              {courts.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className="block text-[13px] font-medium text-navy/70">Date</span>
-            <input
-              type="date"
-              name="date"
-              defaultValue={selectedDate}
-              className="mt-1.5 w-full rounded-xl border border-navy/15 px-4 py-3 text-[15px]"
-            />
-          </label>
-          <label className="block">
-            <span className="block text-[13px] font-medium text-navy/70">Programme</span>
-            <select
-              name="program"
-              defaultValue={selectedProgram}
-              className="mt-1.5 w-full rounded-xl border border-navy/15 px-4 py-3 text-[15px]"
-            >
-              {programs.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.title}
-                </option>
-              ))}
-            </select>
-          </label>
-          <Button size="sm" variant="outline" className="sm:col-span-3">
-            Check availability
-          </Button>
-        </Card>
+        {/*
+          The filter form and slot grid both need the same Supabase round
+          trips (auth, courts, programs, existing bookings). Splitting them
+          into their own async component behind Suspense means this page's
+          shell — the part next-view-transitions needs to paint to satisfy
+          the browser's View Transition DOM-update timeout — commits
+          immediately on navigation, instead of the whole route blocking on
+          four sequential/parallel DB calls first.
+        */}
+        <Suspense fallback={<BookingSkeleton />}>
+          <BookingContent searchParams={searchParams} />
+        </Suspense>
+      </main>
+    </PageTransition>
+  );
+}
 
-        <Card className="mt-6 p-6 sm:p-8">
-          <h2 className="text-[15px] font-semibold uppercase tracking-[0.1em] text-navy/60">
-            Available times, {selectedDate}
-          </h2>
+function BookingSkeleton() {
+  return (
+    <Card className="mt-10 p-6 sm:p-8">
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Skeleton className="h-[68px] rounded-xl" />
+        <Skeleton className="h-[68px] rounded-xl" />
+        <Skeleton className="h-[68px] rounded-xl" />
+      </div>
+      <Skeleton className="mt-5 h-11 w-40 rounded-full" />
+      <div className="mt-8 border-t border-white/10 pt-8">
+        <Skeleton className="h-3 w-32 rounded" />
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {[0, 1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-[46px] rounded-xl" />
+          ))}
+        </div>
+      </div>
+    </Card>
+  );
+}
 
-          {slots.length === 0 ? (
-            <p className="mt-4 text-[15px] text-navy/60">No open slots this day. Try another date.</p>
-          ) : (
-            <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {slots.map((slot) => (
+async function BookingContent({ searchParams }: { searchParams: Promise<BookSearchParams> }) {
+  const { user, courts, programs, selectedCourt, selectedDate, selectedProgram, slots, selectedSlot, minDate, maxDate } =
+    await getBookingData(searchParams);
+
+  const courtName = courts.find((c) => c.id === selectedCourt)?.name ?? "Court";
+  const programTitle = programs.find((p) => p.id === selectedProgram)?.title ?? "Session";
+
+  // A slot link carries the current filters forward plus which slot is
+  // picked (or none, to let the player change their mind) — same idea as
+  // the Court/Date/Programme fields, just expressed as a link instead of a
+  // form field, since picking a slot doesn't need its own round trip of
+  // re-fetching anything.
+  function slotHref(startsAt: string | null) {
+    const params = new URLSearchParams({ court: selectedCourt, date: selectedDate, program: selectedProgram });
+    if (startsAt) params.set("slot", startsAt);
+    return `/book?${params.toString()}`;
+  }
+
+  return (
+    <Card className="mt-10 p-6 sm:p-8">
+      <form method="get" className="grid gap-4 sm:grid-cols-3">
+        <label className="block">
+          <span className="block text-[13px] font-medium text-white/70">Court</span>
+          <Dropdown
+            name="court"
+            defaultValue={selectedCourt}
+            className="mt-1.5"
+            options={courts.map((c) => ({ value: c.id, label: c.name }))}
+          />
+        </label>
+        <label className="block">
+          <span className="block text-[13px] font-medium text-white/70">Date</span>
+          <DatePicker
+            name="date"
+            defaultValue={selectedDate}
+            min={minDate}
+            max={maxDate}
+            className="mt-1.5"
+          />
+        </label>
+        <label className="block">
+          <span className="block text-[13px] font-medium text-white/70">Programme</span>
+          <Dropdown
+            name="program"
+            defaultValue={selectedProgram}
+            className="mt-1.5"
+            options={programs.map((p) => ({ value: p.id, label: p.title }))}
+          />
+        </label>
+        <Button size="sm" variant="outline" className="sm:col-span-3">
+          Check availability
+        </Button>
+      </form>
+
+      <div className="mt-8 border-t border-white/10 pt-8">
+        <h2 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-white/50">
+          Available times, {selectedDate}
+        </h2>
+
+        {slots.length === 0 ? (
+          <p className="mt-4 text-[15px] text-white/60">No open slots this day. Try another date.</p>
+        ) : (
+          <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {slots.map((slot) => {
+              const isSelected = slot.startsAt === selectedSlot?.startsAt;
+              return (
                 <li key={slot.startsAt}>
-                  <form action={createBooking}>
-                    <input type="hidden" name="court_id" value={selectedCourt} />
-                    <input type="hidden" name="program_id" value={selectedProgram} />
-                    <input type="hidden" name="date" value={selectedDate} />
-                    <input type="hidden" name="starts_at" value={slot.startsAt} />
-                    <input type="hidden" name="ends_at" value={slot.endsAt} />
-                    <button
-                      type="submit"
-                      className="w-full rounded-xl border border-navy/15 py-3 text-[14px] font-medium text-navy transition-colors hover:border-emerald-600 hover:bg-emerald-50"
-                    >
-                      {slot.label}
-                    </button>
-                  </form>
+                  {/* Plain <a>, not next-view-transitions' Link: this only
+                      changes the ?slot= query param, and the client router's
+                      soft navigation was leaving the Suspense-wrapped
+                      content stale (URL updated, confirm card didn't) — a
+                      real <form method="get"> field-change elsewhere on
+                      this page always does a full navigation and doesn't
+                      hit that, so a real navigation here matches it. */}
+                  <a
+                    href={slotHref(isSelected ? null : slot.startsAt)}
+                    aria-current={isSelected || undefined}
+                    className={`block w-full rounded-xl border py-3 text-center text-[14px] font-medium transition-colors ${
+                      isSelected
+                        ? "border-emerald bg-emerald-500/15 text-emerald"
+                        : "border-white/15 text-white hover:border-emerald hover:bg-emerald-50 hover:text-navy"
+                    }`}
+                  >
+                    {slot.label}
+                  </a>
                 </li>
-              ))}
-            </ul>
-          )}
-        </Card>
+              );
+            })}
+          </ul>
+        )}
+      </div>
 
-        {!user && (
-          <p className="mt-6 text-[14px] text-navy/60">
-            Picking a time will ask you to{" "}
-            <a href="/sign-in?next=/book" className="font-semibold text-emerald-700">
+      {/* Always visible, not just once a slot is picked — this is the
+          booking flow's natural end point, so it reads as part of the
+          page rather than something that pops in. Nothing actually books
+          until Confirm is pressed and enabled, which only happens once a
+          time is selected above. */}
+      <div className="mt-8 rounded-xl border border-emerald/30 bg-emerald-500/5 p-5">
+        <h2 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-emerald">Confirm your booking</h2>
+        <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-[14px] sm:grid-cols-4">
+          <div>
+            <dt className="text-white/50">Court</dt>
+            <dd className="font-semibold text-white">{courtName}</dd>
+          </div>
+          <div>
+            <dt className="text-white/50">Date</dt>
+            <dd className="font-semibold text-white">{selectedDate}</dd>
+          </div>
+          <div>
+            <dt className="text-white/50">Time</dt>
+            <dd className={selectedSlot ? "font-semibold text-white" : "text-white/40"}>
+              {selectedSlot ? selectedSlot.label : "Pick a time above"}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-white/50">Programme</dt>
+            <dd className="font-semibold text-white">{programTitle}</dd>
+          </div>
+        </dl>
+
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+          {selectedSlot ? (
+            <>
+              <form action={createBooking}>
+                <input type="hidden" name="court_id" value={selectedCourt} />
+                <input type="hidden" name="program_id" value={selectedProgram} />
+                <input type="hidden" name="date" value={selectedDate} />
+                <input type="hidden" name="starts_at" value={selectedSlot.startsAt} />
+                <input type="hidden" name="ends_at" value={selectedSlot.endsAt} />
+                <Button size="sm">Confirm booking</Button>
+              </form>
+              <a href={slotHref(null)} className="text-[14px] font-medium text-white/60 hover:text-white">
+                Change time
+              </a>
+            </>
+          ) : (
+            <Button size="sm" disabled>
+              Confirm booking
+            </Button>
+          )}
+        </div>
+
+        {!user && selectedSlot && (
+          <p className="mt-4 text-center text-[14px] text-white/60">
+            Confirming will ask you to{" "}
+            <a href="/sign-in?next=/book" className="font-semibold text-emerald">
               sign in
             </a>
             .
           </p>
         )}
-      </main>
-    </PageTransition>
+      </div>
+    </Card>
   );
 }
