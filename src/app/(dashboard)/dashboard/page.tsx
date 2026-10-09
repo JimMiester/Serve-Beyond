@@ -124,7 +124,7 @@ export default async function DashboardPage({
           </div>
           <div className="flex gap-3">
             <GlassButton href="/bookings">View History</GlassButton>
-            <AccentButton href="/book">+ Book Session</AccentButton>
+            <AccentButton href="/court-booking">+ Book Session</AccentButton>
           </div>
         </div>
 
@@ -203,7 +203,7 @@ export default async function DashboardPage({
             ) : (
               <div className="mt-4 flex flex-1 flex-col items-start justify-between gap-4">
                 <p className="text-[14px] text-white/55">Nothing on the calendar yet.</p>
-                <AccentButton href="/book" className="w-full">
+                <AccentButton href="/court-booking" className="w-full">
                   Book a Session
                 </AccentButton>
               </div>
@@ -216,7 +216,7 @@ export default async function DashboardPage({
           <GlassCard className="lg:col-span-2" delay={360}>
             <div className="flex items-center justify-between">
               <h2 className="font-display text-[18px] font-bold text-white">Upcoming Sessions</h2>
-              <Link href="/book" className="text-[13px] font-semibold" style={{ color: "var(--accent)" }}>
+              <Link href="/court-booking" className="text-[13px] font-semibold" style={{ color: "var(--accent)" }}>
                 + New
               </Link>
             </div>
