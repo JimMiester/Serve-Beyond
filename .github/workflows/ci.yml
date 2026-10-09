@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npx eslint src
+
+      - name: Typecheck
+        run: npx tsc --noEmit -p .
+
+      - name: Test
+        run: npm test
+
+      # No Supabase/Resend secrets needed — next.config.ts and lib/email.ts
+      # both fall back cleanly when those env vars are unset, so the build
+      # itself doesn't depend on real credentials existing in CI.
+      - name: Build
+        run: npx next build
