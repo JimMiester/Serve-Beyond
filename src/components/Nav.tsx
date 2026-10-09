@@ -62,7 +62,13 @@ export default function Nav() {
               </svg>
             </summary>
             {/* top-full keeps the panel glued to the bar as it shrinks. */}
-            <ul className="glass-card menu-panel absolute right-0 top-[calc(100%+14px)] w-52 rounded-2xl border border-white/10 p-2 shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]">
+            {/* Solid bg-navy, not glass-card's backdrop-filter blur — blur
+                on an absolutely-positioned, auto-height panel like this one
+                gets painted at a stale, too-short size in Chromium once the
+                list has enough items to need real height. Dropdown.tsx's
+                own listbox panel hit the same class of bug and already
+                uses a solid background for it. */}
+            <ul className="menu-panel absolute right-0 top-[calc(100%+14px)] w-52 rounded-2xl border border-white/10 bg-navy p-2 shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]">
               {LINKS.map(({ label, href }) => (
                 <li key={label}>
                   <Link href={href} className="block rounded-xl px-4 py-3 text-[15px] text-white/70 hover:bg-white/5">
