@@ -1,6 +1,8 @@
 ﻿import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { ViewTransitions } from "next-view-transitions";
+import { site } from "@/content/site";
+import { siteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 // latin-ext is required, not optional: the peso sign (U+20B1) sits in
@@ -17,10 +19,71 @@ const playfair = Playfair_Display({
   style: ["normal", "italic"],
 });
 
+const DEFAULT_DESCRIPTION =
+  "Book courts by the hour, train with certified coaches, and track your progress session by session.";
+
 export const metadata: Metadata = {
-  title: "Serve & Beyond Tennis Academy",
-  description:
-    "Book courts by the hour, train with certified coaches, and track your progress session by session.",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: site.name,
+    // Lets every page set just its own short title ("Book a session") and
+    // get the brand suffix for free, instead of every page's own metadata
+    // repeating the full name.
+    template: `%s · ${site.name}`,
+  },
+  description: DEFAULT_DESCRIPTION,
+  openGraph: {
+    type: "website",
+    siteName: site.name,
+    locale: "en_PH",
+    title: site.name,
+    description: DEFAULT_DESCRIPTION,
+    images: [{ url: "/logo.png", width: 840, height: 302, alt: site.name }],
+  },
+  twitter: {
+    card: "summary",
+    title: site.name,
+    description: DEFAULT_DESCRIPTION,
+    images: ["/logo.png"],
+  },
+};
+
+// schema.org/DayOfWeek by site.hours' own numeric index (0 = Sunday), so
+// the JSON-LD opening hours can never drift from what the booking engine
+// itself enforces (src/app/(site)/book/availability.ts reads this same
+// site.hours table) — the one other place this mapping would need to be
+// kept in sync by hand if it lived separately.
+const SCHEMA_DAYS = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "SportsActivityLocation",
+  name: site.name,
+  url: siteUrl,
+  telephone: site.phone,
+  address: {
+    "@type": "PostalAddress",
+    name: site.address[0],
+    streetAddress: site.address[1],
+    addressLocality: "Pasig City",
+    postalCode: "1605",
+    addressRegion: "Metro Manila",
+    addressCountry: "PH",
+  },
+  openingHoursSpecification: site.hours.map((h) => ({
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: h.dow.map((d) => `https://schema.org/${SCHEMA_DAYS[d]}`),
+    opens: `${String(h.openHour).padStart(2, "0")}:00`,
+    closes: `${String(h.closeHour).padStart(2, "0")}:00`,
+  })),
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -35,6 +98,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <noscript>
             <style>{`[data-reveal]{opacity:1 !important;transform:none !important}`}</style>
           </noscript>
+          {/* dangerouslySetInnerHTML is the documented way to emit JSON-LD —
+              structuredData is our own object literal above, never
+              user input, so there's nothing here to sanitize. */}
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         </head>
         <body className="min-h-full flex flex-col bg-navy text-white">
           <a
