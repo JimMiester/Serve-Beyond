@@ -13,12 +13,12 @@ import type { Coach, Program } from "@/lib/supabase/types";
 
 type ProgramRow = Program & { coaches: Coach | null };
 
-// Next dedupes identical fetches within one request, so this and the page
-// component's own query below only hit Supabase once in practice.
+// Same select string as the page component's own query below, so Next
+// dedupes the two into one Supabase round trip within this request.
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const supabase = await createClient();
-  const { data } = await supabase.from("programs").select("title, blurb").eq("slug", slug).maybeSingle();
+  const { data } = await supabase.from("programs").select("*, coaches(*)").eq("slug", slug).maybeSingle();
   if (!data) return { title: "Class not found" };
   return {
     title: data.title,
