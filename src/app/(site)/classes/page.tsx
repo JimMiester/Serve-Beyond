@@ -1,6 +1,9 @@
+import Image from "next/image";
+import Link from "next/link";
 import PageTransition from "@/components/ui/PageTransition";
 import SectionHead from "@/components/ui/SectionHead";
 import Card from "@/components/ui/Card";
+import Skeleton from "@/components/ui/Skeleton";
 import { createClient } from "@/lib/supabase/server";
 import { getPublicImageUrl } from "@/lib/supabase/storage";
 import type { Program } from "@/lib/supabase/types";
@@ -25,21 +28,24 @@ export default async function ClassesPage() {
             const image = getPublicImageUrl(p.photo_path);
             return (
               <li key={p.id}>
-                <Card className="h-full overflow-hidden p-0">
-                  <div className="aspect-[4/3] w-full bg-white/5">
-                    {image && (
-                      // eslint-disable-next-line @next/next/no-img-element -- catalog thumbnail, next/image not worth the config here
-                      <img src={image} alt="" className="size-full object-cover" />
-                    )}
-                  </div>
-                  <div className="p-6">
-                    <p className="font-display text-[20px] font-bold text-white">{p.title}</p>
-                    {p.blurb && <p className="mt-2 text-[14px] leading-[1.6] text-white/65">{p.blurb}</p>}
-                    <p className="mt-4 text-[15px] font-semibold text-emerald">
-                      From ₱{p.price_from.toLocaleString()} / {p.price_unit}
-                    </p>
-                  </div>
-                </Card>
+                <Link href={`/classes/${p.slug}`} className="block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald">
+                  <Card className="h-full overflow-hidden p-0 transition-transform duration-200 active:scale-[0.99]">
+                    <div className="relative aspect-[4/3] w-full bg-white/5">
+                      {image ? (
+                        <Image src={image} alt="" fill sizes="(min-width:1024px) 23vw, (min-width:640px) 46vw, 92vw" className="object-cover" />
+                      ) : (
+                        <Skeleton className="absolute inset-0" />
+                      )}
+                    </div>
+                    <div className="p-6">
+                      <p className="font-display text-[20px] font-bold text-white">{p.title}</p>
+                      {p.blurb && <p className="mt-2 text-[14px] leading-[1.6] text-white/65">{p.blurb}</p>}
+                      <p className="mt-4 text-[15px] font-semibold text-emerald">
+                        From ₱{p.price_from.toLocaleString()} / {p.price_unit}
+                      </p>
+                    </div>
+                  </Card>
+                </Link>
               </li>
             );
           })}

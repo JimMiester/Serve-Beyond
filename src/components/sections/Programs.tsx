@@ -35,7 +35,7 @@ export default async function Programs() {
             return (
               <li key={p.slug}>
                 <Link
-                  href={`/coaching/${p.slug}`}
+                  href={`/classes/${p.slug}`}
                   className="group block rounded-2xl transition-transform duration-200 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald"
                 >
                   <Card className="relative aspect-[4/3] overflow-hidden">

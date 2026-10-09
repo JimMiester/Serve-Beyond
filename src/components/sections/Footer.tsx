@@ -8,9 +8,9 @@ const COLUMNS = [
     title: "Play",
     links: [
       { label: "Court hire", href: "/courts" },
-      { label: "Private coaching", href: "/coaching/private" },
-      { label: "Group clinics", href: "/coaching/group" },
-      { label: "Junior academy", href: "/coaching/junior" },
+      { label: "Private coaching", href: "/classes/private" },
+      { label: "Group clinics", href: "/classes/group" },
+      { label: "Junior academy", href: "/classes/junior" },
     ],
   },
   {
