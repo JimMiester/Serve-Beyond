@@ -18,8 +18,12 @@ export default function Logo({
     <Image
       src={variant === "light" ? "/logo-light.png" : "/logo.png"}
       alt="Serve & Beyond Tennis Academy"
-      width={2500}
-      height={900}
+      // 840×302 (3x the 280px display width, for retina) — was 2500×900,
+      // an oversized source that was both the homepage's LCP element and
+      // its biggest single waste of bytes (32 of 36 KiB unused at the
+      // rendered size, per the CTO audit).
+      width={840}
+      height={302}
       priority={priority}
       sizes="280px"
       className={className}
