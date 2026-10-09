@@ -11,6 +11,7 @@ import type { Coach } from "@/lib/supabase/types";
 export const metadata: Metadata = {
   title: "Our coaches",
   description: "Certified coaches who still play league tennis themselves. See who's on the floor and book a session.",
+  alternates: { canonical: "/coaching" },
 };
 
 export default async function CoachingPage() {

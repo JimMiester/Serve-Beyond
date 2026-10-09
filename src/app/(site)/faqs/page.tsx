@@ -6,6 +6,7 @@ import { faqs } from "@/content/site";
 export const metadata: Metadata = {
   title: "FAQs",
   description: "Rackets, booking windows, cancellations, and more — everything to know before you book a court or a class.",
+  alternates: { canonical: "/faqs" },
 };
 
 export default function FaqsPage() {

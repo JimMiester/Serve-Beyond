@@ -12,6 +12,7 @@ import type { Program } from "@/lib/supabase/types";
 export const metadata: Metadata = {
   title: "Classes & pricing",
   description: "One format for every kind of player, from a first private lesson to a standing group clinic. See every class and its price.",
+  alternates: { canonical: "/classes" },
 };
 
 export default async function ClassesPage() {

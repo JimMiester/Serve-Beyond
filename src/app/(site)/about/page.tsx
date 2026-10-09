@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "About us",
   description:
     "Why Serve & Beyond exists: real court and coach availability enforced server-side, no double bookings, no subscription fees.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {

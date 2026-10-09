@@ -18,6 +18,7 @@ type BookSearchParams = BaseBookSearchParams & { error?: string; booked?: string
 export const metadata: Metadata = {
   title: "Book a session",
   description: "Pick a court, a day, and a programme — open slots show up right away, up to 3 months ahead.",
+  alternates: { canonical: "/book" },
 };
 
 // One page, one card: every field already has a sane default (today, the

@@ -12,6 +12,7 @@ import type { Court } from "@/lib/supabase/types";
 export const metadata: Metadata = {
   title: "Our courts",
   description: "Indoor, floodlit, climate-controlled tennis courts at our Metro Manila location. See every court and book one by the hour.",
+  alternates: { canonical: "/courts" },
 };
 
 export default async function CourtsPage() {

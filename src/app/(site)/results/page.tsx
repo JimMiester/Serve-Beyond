@@ -8,6 +8,7 @@ import { testimonials } from "@/content/site";
 export const metadata: Metadata = {
   title: "Results",
   description: "What members actually say about training and playing at Serve & Beyond.",
+  alternates: { canonical: "/results" },
 };
 
 export default async function ResultsPage() {
